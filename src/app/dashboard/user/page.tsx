@@ -5,6 +5,7 @@ import RegisterButton from "@/components/registerButton";
 import { users as mockUsers } from "../../../mocks/users";
 import React, { useEffect, useState } from "react";
 import { User } from "@/types/user";
+import ConfirmModal from "@/components/confirmModal";
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -29,6 +30,13 @@ const UserManagement = () => {
         uniqueIdentifier: user.id,
         cols,
       };
+    });
+  };
+
+  const handleDelete = (id: number | string) => {
+    setListUsers((prev) => {
+      const updatedUsers = prev.filter((user) => user.value.id !== id);
+      return updatedUsers;
     });
   };
 
@@ -60,15 +68,17 @@ const UserManagement = () => {
           onRegister={() => setIsRegistering(true)}
         />
       </div>
-        {isRegistering ? (
-          <p>Cadastrando</p>
-        ) : (
-          <List
-            data={listUsers}
-            onFilterChange={onFilterChange}
-            searchLabel="Nome do usuário"
-          />
-        )}
+      {isRegistering ? (
+        <p>Cadastrando</p>
+      ) : (
+        <List
+          data={listUsers}
+          onFilterChange={onFilterChange}
+          onSeeMore={() => {}}
+          onDelete={handleDelete}
+          searchLabel="Nome do usuário"
+        />
+      )}
     </div>
   );
 };

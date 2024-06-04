@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 const ModuleManagement = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [listModules, setListModules] = useState<ListItem<Module>[]>([]);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const formatModules = (data: Module[]): ListItem<Module>[] => {
     return data.map((module) => {
@@ -31,6 +32,13 @@ const ModuleManagement = () => {
     });
   };
 
+  const handleDelete = (id: number | string) => {
+    setListModules((prev)=>{
+      const updatedModules = prev.filter(module => module.value.id !== id);
+      return updatedModules
+    });
+  };
+
   const onFilterChange = (value: string) => {
     const filteredModules = modules.filter(
       (item) =>
@@ -50,18 +58,25 @@ const ModuleManagement = () => {
   }, []);
 
   return (
-    <div className="flex flex-col p-10 gap-5 ">
+    <div className="flex flex-col p-10 gap-5 w-full h-full">
       <div className="flex gap-16 items-center">
         <h1 className="font-bold text-xl">Gerenciamento de módulo</h1>
-        <RegisterButton text="módulo" />
-      </div>
-      <div className="w-full">
-        <List
-          data={listModules}
-          onFilterChange={onFilterChange}
-          searchLabel="Nome do módulo"
+        <RegisterButton
+          text="módulo"
+          onRegister={() => setIsRegistering(true)}
         />
       </div>
+        {isRegistering ? (
+          <p>Cadastrando</p>
+        ) : (
+          <List
+            data={listModules}
+            onFilterChange={onFilterChange}
+            onDelete={handleDelete}
+            onSeeMore={()=>{}}
+            searchLabel="Nome do módulo"
+          />
+        )}
     </div>
   );
 };

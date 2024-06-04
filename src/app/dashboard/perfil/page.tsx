@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import List, { ListColumn, ListItem } from "@/components/list";
 import RegisterButton from "@/components/registerButton";
@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 const ProfileManagement = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [listProfiles, setListProfiles] = useState<ListItem<Profile>[]>([]);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const formatProfiles = (data: Profile[]): ListItem<Profile>[] => {
     return data.map((profile) => {
@@ -25,6 +26,13 @@ const ProfileManagement = () => {
         uniqueIdentifier: profile.id,
         cols,
       };
+    });
+  };
+
+  const handleDelete = (id: number | string) => {
+    setListProfiles((prev)=>{
+      const updatedProfiles = prev.filter(profile => profile.value.id !== id);
+      return updatedProfiles
     });
   };
 
@@ -47,18 +55,25 @@ const ProfileManagement = () => {
   }, []);
 
   return (
-    <div className="flex flex-col p-10 gap-5 ">
+    <div className="flex flex-col p-10 gap-5 w-full h-full">
       <div className="flex gap-16 items-center">
         <h1 className="font-bold text-xl">Gerenciamento de perfil</h1>
-        <RegisterButton text="perfil" />
-      </div>
-      <div className="w-full">
-        <List
-          data={listProfiles}
-          onFilterChange={onFilterChange}
-          searchLabel="Nome do perfil"
+        <RegisterButton
+          text="perfil"
+          onRegister={() => setIsRegistering(true)}
         />
       </div>
+        {isRegistering ? (
+          <p>Cadastrando</p>
+        ) : (
+          <List
+            data={listProfiles}
+            onFilterChange={onFilterChange}
+            onDelete={handleDelete}
+            onSeeMore={()=>{}}
+            searchLabel="Nome do perfil"
+          />
+        )}
     </div>
   );
 };

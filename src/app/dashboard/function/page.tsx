@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 const FunctionManagement = () => {
   const [methods, setMethods] = useState<Method[]>([]);
   const [listMethods, setListMethods] = useState<ListItem<Method>[]>([]);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const formatMethods = (data: Method[]): ListItem<Method>[] => {
     return data.map((method) => {
@@ -31,6 +32,13 @@ const FunctionManagement = () => {
     });
   };
 
+  const handleDelete = (id: number | string) => {
+    setListMethods((prev)=>{
+      const updatedMethods = prev.filter(method => method.value.id !== id);
+      return updatedMethods
+    });
+  };
+
   const onFilterChange = (value: string) => {
     const filteredMethods = methods.filter(
       (item) =>
@@ -50,18 +58,25 @@ const FunctionManagement = () => {
   }, []);
 
   return (
-    <div className="flex flex-col p-10 gap-5 ">
+    <div className="flex flex-col p-10 gap-5 w-full h-full">
       <div className="flex gap-16 items-center">
         <h1 className="font-bold text-xl">Gerenciamento de função</h1>
-        <RegisterButton text="função" />
-      </div>
-      <div className="w-full">
-        <List
-          data={listMethods}
-          onFilterChange={onFilterChange}
-          searchLabel="Nome do função"
+        <RegisterButton
+          text="função"
+          onRegister={() => setIsRegistering(true)}
         />
       </div>
+        {isRegistering ? (
+          <p>Cadastrando</p>
+        ) : (
+          <List
+            data={listMethods}
+            onFilterChange={onFilterChange}
+            onDelete={handleDelete}
+            onSeeMore={()=>{}}
+            searchLabel="Nome do função"
+          />
+        )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { Transaction } from '@/types/transaction';
 const TransactionManagement = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [listTransactions, setListTransactions] = useState<ListItem<Transaction>[]>([]);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const formatTransactions = (data: Transaction[]): ListItem<Transaction>[] => {
     return data.map((transaction) => {
@@ -31,6 +32,13 @@ const TransactionManagement = () => {
     });
   };
 
+  const handleDelete = (id: number | string) => {
+    setListTransactions((prev)=>{
+      const updatedTransactions = prev.filter(transaction => transaction.value.id !== id);
+      return updatedTransactions
+    });
+  };
+
   const onFilterChange = (value: string) => {
     const filteredTransactions = transactions.filter(
       (item) =>
@@ -50,18 +58,25 @@ const TransactionManagement = () => {
   }, []);
 
   return (
-    <div className="flex flex-col p-10 gap-5 ">
+    <div className="flex flex-col p-10 gap-5 w-full h-full">
       <div className="flex gap-16 items-center">
         <h1 className="font-bold text-xl">Gerenciamento de transação</h1>
-        <RegisterButton text="transação" />
-      </div>
-      <div className="w-full">
-        <List
-          data={listTransactions}
-          onFilterChange={onFilterChange}
-          searchLabel="Nome da transação"
+        <RegisterButton
+          text="transação"
+          onRegister={() => setIsRegistering(true)}
         />
       </div>
+        {isRegistering ? (
+          <p>Cadastrando</p>
+        ) : (
+          <List
+            data={listTransactions}
+            onFilterChange={onFilterChange}
+            onDelete={handleDelete}
+            onSeeMore={()=>{}}
+            searchLabel="Nome da transação"
+          />
+        )}
     </div>
   );
 };
