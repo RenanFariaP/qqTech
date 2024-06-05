@@ -14,6 +14,7 @@ export interface ListItem<T> {
   value: T;
   uniqueIdentifier: string | number;
   cols: ListColumn<T>[];
+  label: string;
 }
 
 interface Props<T> {
@@ -21,12 +22,11 @@ interface Props<T> {
   onFilterChange: (value: string) => void;
   onDelete: (value: string | number) => void;
   onSeeMore: (value: string) => void;
-  searchLabel: string;
-
+  listEntity: string;
 }
 
-const List = <T,>({ data, onFilterChange, searchLabel, onDelete, onSeeMore }: Props<T>) => {
-  const [value, setValue] = useState<T[]>([]);
+const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Props<T>) => {
+  const [selectedEntity, setSelectedEntity] = useState<ListItem<T>|null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +37,24 @@ const List = <T,>({ data, onFilterChange, searchLabel, onDelete, onSeeMore }: Pr
     setSearchQuery(event.target.value);
     setCurrentPage(1);
   };
+
+  const handleDelete = (item: ListItem<T>) =>{
+    setIsOpen(true);
+    setSelectedEntity(item);
+  }
+
+  const handleModalCancel = () =>{
+    setSelectedEntity(null);
+    setIsOpen(false);
+  }
+
+  const handleModalConfirm = () =>{
+    console.log(selectedEntity)
+    if(!selectedEntity) return;
+    onDelete(selectedEntity.uniqueIdentifier);
+    setIsOpen(false);
+    setSelectedEntity(null);
+  }
 
   useEffect(() => {
     onFilterChange(searchQuery);
@@ -49,9 +67,10 @@ const List = <T,>({ data, onFilterChange, searchLabel, onDelete, onSeeMore }: Pr
     currentPage * itemsPerPage
   );
   return (
-    <div className="flex flex-col mt-5 gap-4 w-full h-full">
+    <>
+      <div className="flex flex-col mt-5 gap-4 w-full h-full">
       <SearchInput
-        placeholder={`Nome do ${searchLabel}`}
+        placeholder={`Nome do ${listEntity}`}
         value={searchQuery}
         onChange={handleSearchChange}
       />
@@ -63,13 +82,13 @@ const List = <T,>({ data, onFilterChange, searchLabel, onDelete, onSeeMore }: Pr
           >
             <div className="flex items-center">
               {data.cols.map((column) => (
-                <p className="mx-2 text-start text-wrap min-w-40" key={column.value}>
+                <p className="mx-2 text-start text-wrap min-w-80" key={column.value}>
                   {column.value}
                 </p>
               ))}
             </div>
             <div className="flex gap-3 items-center">
-              <IconButton onClick={()=>onDelete(data.uniqueIdentifier)} icon={Icon.delete} />
+              <IconButton onClick={()=>handleDelete(data)} icon={Icon.delete} />
               <IconButton onClick={()=>{}} icon={Icon.more} />
             </div>
           </div>
@@ -81,6 +100,8 @@ const List = <T,>({ data, onFilterChange, searchLabel, onDelete, onSeeMore }: Pr
         onPageChange={setCurrentPage}
       />
     </div>
+    <ConfirmModal isOpen={isOpen} text={`Deseja remover ${listEntity} ${selectedEntity? selectedEntity.label : ""}?`} title="Confirmar exclusão" confirmButtonText="Confirmar" onConfirm={handleModalConfirm} onDecline={handleModalCancel}/>
+    </>
   );
 };
 

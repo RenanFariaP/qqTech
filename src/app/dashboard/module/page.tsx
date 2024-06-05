@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import List, { ListColumn, ListItem } from '@/components/list';
-import RegisterButton from '@/components/registerButton';
+import List, { ListColumn, ListItem } from "@/components/list";
 import { modules as mockModules } from "../../../mocks/modules";
-import { Module } from '@/types/module';
-import React, { useEffect, useState } from 'react'
+import { Module } from "@/types/module";
+import React, { useEffect, useState } from "react";
+import GenericButton, { Icon } from "@/components/genericButton";
 
 const ModuleManagement = () => {
   const [modules, setModules] = useState<Module[]>([]);
@@ -28,14 +28,15 @@ const ModuleManagement = () => {
         value: module,
         uniqueIdentifier: module.id,
         cols,
+        label: module.name,
       };
     });
   };
 
   const handleDelete = (id: number | string) => {
-    setListModules((prev)=>{
-      const updatedModules = prev.filter(module => module.value.id !== id);
-      return updatedModules
+    setListModules((prev) => {
+      const updatedModules = prev.filter((module) => module.value.id !== id);
+      return updatedModules;
     });
   };
 
@@ -59,26 +60,23 @@ const ModuleManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center">
+      <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold text-xl">Gerenciamento de módulo</h1>
-        <RegisterButton
-          text="módulo"
-          onRegister={() => setIsRegistering(true)}
-        />
+        {/* <GenericButton text="Voltar" icon={Icon.add} /> */}
       </div>
-        {isRegistering ? (
-          <p>Cadastrando</p>
-        ) : (
-          <List
-            data={listModules}
-            onFilterChange={onFilterChange}
-            onDelete={handleDelete}
-            onSeeMore={()=>{}}
-            searchLabel="Nome do módulo"
-          />
-        )}
+      {isRegistering ? (
+        <p>Cadastrando</p>
+      ) : (
+        <List
+          data={listModules}
+          onFilterChange={onFilterChange}
+          onSeeMore={() => {}}
+          onDelete={handleDelete}
+          listEntity="o módulo"
+        />
+      )}
     </div>
   );
 };
 
-export default ModuleManagement
+export default ModuleManagement;

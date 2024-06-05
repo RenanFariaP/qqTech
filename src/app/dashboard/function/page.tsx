@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import List, { ListColumn, ListItem } from '@/components/list';
-import RegisterButton from '@/components/registerButton';
+import List, { ListColumn, ListItem } from "@/components/list";
 import { methods as mockMethods } from "../../../mocks/methods";
-import { Method } from '@/types/method';
-import React, { useEffect, useState } from 'react'
+import { Method } from "@/types/method";
+import React, { useEffect, useState } from "react";
+import GenericButton, { Icon } from "@/components/genericButton";
 
 const FunctionManagement = () => {
   const [methods, setMethods] = useState<Method[]>([]);
@@ -28,14 +28,15 @@ const FunctionManagement = () => {
         value: method,
         uniqueIdentifier: method.id,
         cols,
+        label: method.name,
       };
     });
   };
 
   const handleDelete = (id: number | string) => {
-    setListMethods((prev)=>{
-      const updatedMethods = prev.filter(method => method.value.id !== id);
-      return updatedMethods
+    setListMethods((prev) => {
+      const updatedMethods = prev.filter((method) => method.value.id !== id);
+      return updatedMethods;
     });
   };
 
@@ -59,26 +60,23 @@ const FunctionManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center">
+      <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold text-xl">Gerenciamento de função</h1>
-        <RegisterButton
-          text="função"
-          onRegister={() => setIsRegistering(true)}
-        />
+        {/* <GenericButton text="Voltar" icon={Icon.add} /> */}
       </div>
-        {isRegistering ? (
-          <p>Cadastrando</p>
-        ) : (
-          <List
-            data={listMethods}
-            onFilterChange={onFilterChange}
-            onDelete={handleDelete}
-            onSeeMore={()=>{}}
-            searchLabel="Nome do função"
-          />
-        )}
+      {isRegistering ? (
+        <p>Cadastrando</p>
+      ) : (
+        <List
+          data={listMethods}
+          onFilterChange={onFilterChange}
+          onSeeMore={() => {}}
+          onDelete={handleDelete}
+          listEntity="a função"
+        />
+      )}
     </div>
   );
 };
 
-export default FunctionManagement
+export default FunctionManagement;

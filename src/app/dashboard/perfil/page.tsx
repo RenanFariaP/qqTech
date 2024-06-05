@@ -1,10 +1,10 @@
 "use client";
 
 import List, { ListColumn, ListItem } from "@/components/list";
-import RegisterButton from "@/components/registerButton";
 import { profiles as mockProfiles } from "../../../mocks/profile";
 import { Profile } from "@/types/profile";
 import React, { useEffect, useState } from "react";
+import GenericButton, { Icon } from "@/components/genericButton";
 
 const ProfileManagement = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -15,7 +15,7 @@ const ProfileManagement = () => {
     return data.map((profile) => {
       const cols: ListColumn<Profile>[] = [
         {
-          value: profile.name,
+          value: profile.label,
         },
         {
           value: profile.description,
@@ -25,21 +25,22 @@ const ProfileManagement = () => {
         value: profile,
         uniqueIdentifier: profile.id,
         cols,
+        label: profile.label,
       };
     });
   };
 
   const handleDelete = (id: number | string) => {
-    setListProfiles((prev)=>{
-      const updatedProfiles = prev.filter(profile => profile.value.id !== id);
-      return updatedProfiles
+    setListProfiles((prev) => {
+      const updatedProfiles = prev.filter((profile) => profile.value.id !== id);
+      return updatedProfiles;
     });
   };
 
   const onFilterChange = (value: string) => {
     const filteredProfiles = profiles.filter(
       (item) =>
-        item.name.toLowerCase().includes(value.toLowerCase()) ||
+        item.label.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
     setListProfiles(formatProfiles(filteredProfiles));
@@ -56,26 +57,25 @@ const ProfileManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center">
+      <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold text-xl">Gerenciamento de perfil</h1>
-        <RegisterButton
-          text="perfil"
-          onRegister={() => setIsRegistering(true)}
-        />
+        {/* <GenericButton text="Voltar" icon={Icon.add} /> */}
       </div>
-        {isRegistering ? (
-          <p>Cadastrando</p>
-        ) : (
-          <List
-            data={listProfiles}
-            onFilterChange={onFilterChange}
-            onDelete={handleDelete}
-            onSeeMore={()=>{}}
-            searchLabel="Nome do perfil"
-          />
-        )}
+      {isRegistering ? (
+        <p>Cadastrando</p>
+      ) : (
+        <List
+          data={listProfiles}
+          onFilterChange={onFilterChange}
+          onSeeMore={() => {}}
+          onDelete={handleDelete}
+          listEntity="o perfil"
+        />
+      )}
     </div>
   );
 };
 
 export default ProfileManagement;
+
+

@@ -1,14 +1,18 @@
-"use client"
+"use client";
 
-import List, { ListColumn, ListItem } from '@/components/list';
+import List, { ListColumn, ListItem } from "@/components/list";
 import { transactions as mockTransactions } from "../../../mocks/transactions";
-import React, { useEffect, useState } from 'react'
-import RegisterButton from '@/components/registerButton';
-import { Transaction } from '@/types/transaction';
+import React, { useEffect, useState } from "react";
+import { Transaction } from "@/types/transaction";
+import { getSession } from "next-auth/react";
+import { GetServerSidePropsContext } from "next";
+import GenericButton, { Icon } from "@/components/genericButton";
 
 const TransactionManagement = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [listTransactions, setListTransactions] = useState<ListItem<Transaction>[]>([]);
+  const [listTransactions, setListTransactions] = useState<
+    ListItem<Transaction>[]
+  >([]);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const formatTransactions = (data: Transaction[]): ListItem<Transaction>[] => {
@@ -28,14 +32,21 @@ const TransactionManagement = () => {
         value: transaction,
         uniqueIdentifier: transaction.id,
         cols,
+        label: transaction.name,
       };
     });
   };
 
+  const handleRegister = () => {
+    setIsRegistering(!isRegistering);
+  };
+
   const handleDelete = (id: number | string) => {
-    setListTransactions((prev)=>{
-      const updatedTransactions = prev.filter(transaction => transaction.value.id !== id);
-      return updatedTransactions
+    setListTransactions((prev) => {
+      const updatedTransactions = prev.filter(
+        (transaction) => transaction.value.id !== id
+      );
+      return updatedTransactions;
     });
   };
 
@@ -59,26 +70,27 @@ const TransactionManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center">
+      <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold text-xl">Gerenciamento de transação</h1>
-        <RegisterButton
-          text="transação"
-          onRegister={() => setIsRegistering(true)}
+        <GenericButton
+          onClick={handleRegister}
+          text="Voltar"
+          icon={Icon.return}
         />
       </div>
-        {isRegistering ? (
-          <p>Cadastrando</p>
-        ) : (
-          <List
-            data={listTransactions}
-            onFilterChange={onFilterChange}
-            onDelete={handleDelete}
-            onSeeMore={()=>{}}
-            searchLabel="Nome da transação"
-          />
-        )}
+      {isRegistering ? (
+        <p>Cadastrando</p>
+      ) : (
+        <List
+          data={listTransactions}
+          onFilterChange={onFilterChange}
+          onSeeMore={() => {}}
+          onDelete={handleDelete}
+          listEntity="a transação"
+        />
+      )}
     </div>
   );
 };
 
-export default TransactionManagement
+export default TransactionManagement;

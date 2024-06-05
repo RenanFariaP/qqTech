@@ -1,16 +1,47 @@
 "use client";
 
 import List, { ListColumn, ListItem } from "@/components/list";
-import RegisterButton from "@/components/registerButton";
+import RegisterButton, { Icon } from "@/components/genericButton";
 import { users as mockUsers } from "../../../mocks/users";
+import { profiles as mockProfiles } from "../../../mocks/profile";
 import React, { useEffect, useState } from "react";
 import { User } from "@/types/user";
-import ConfirmModal from "@/components/confirmModal";
+import TextInput from "@/components/textInput";
+import SelectComponent from "@/components/select";
+import { Profile } from "@/types/profile";
+import ButtonInput from "@/components/buttonInput";
+import GenericButton from "@/components/genericButton";
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [listUsers, setListUsers] = useState<ListItem<User>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
+
+  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
+  const [registration, setRegistration] = useState("");
+  const [password, setPassword] = useState("");
+  const [selectedOption, setSelectedOption] = useState<Profile | null>(null);
+
+  const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser(e.target.value);
+  };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+  const handleRegistrationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegistration(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleLinkedProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    //setLinkedProfile(e.target.value);
+  };
 
   const formatUsers = (data: User[]): ListItem<User>[] => {
     return data.map((user) => {
@@ -22,6 +53,9 @@ const UserManagement = () => {
           value: user.matricula,
         },
         {
+          value: user.email,
+        },
+        {
           value: user.profile,
         },
       ];
@@ -29,11 +63,17 @@ const UserManagement = () => {
         value: user,
         uniqueIdentifier: user.id,
         cols,
+        label: user.name,
       };
     });
   };
 
+  const handleRegister = () => {
+    setIsRegistering(!isRegistering);
+  };
+
   const handleDelete = (id: number | string) => {
+    console.log(id);
     setListUsers((prev) => {
       const updatedUsers = prev.filter((user) => user.value.id !== id);
       return updatedUsers;
@@ -61,23 +101,72 @@ const UserManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center">
-        <h1 className="font-bold text-xl">Gerenciamento de usuário</h1>
-        <RegisterButton
-          text="usuário"
-          onRegister={() => setIsRegistering(true)}
-        />
-      </div>
       {isRegistering ? (
-        <p>Cadastrando</p>
+        <>
+          <div className="flex gap-16 items-center justify-between">
+            <h1 className="font-bold text-xl">Gerenciamento de usuário</h1>
+            <GenericButton
+              onClick={handleRegister}
+              text="Voltar"
+              icon={Icon.return}
+            />
+          </div>
+          <form>
+            <h1></h1>
+            <TextInput
+              label="Nome do usuário"
+              type="text"
+              name="user"
+              isRequired={true}
+              value={user}
+              onChange={handleUserChange}
+            />
+            <TextInput
+              label="E-mail"
+              type="email"
+              name="email"
+              isRequired={true}
+              value={email}
+              onChange={handleEmailChange}
+            />
+            <TextInput
+              label="Matrícula"
+              type="text"
+              name="registration"
+              isRequired={true}
+              value={registration}
+              onChange={handleRegistrationChange}
+            />
+            <TextInput
+              label="Senha"
+              type="password"
+              name="password"
+              isRequired={true}
+              value={password}
+              onChange={handlePasswordChange}
+            />
+            <SelectComponent options={mockProfiles} />
+            <ButtonInput label="Enviar" />
+          </form>
+        </>
       ) : (
-        <List
-          data={listUsers}
-          onFilterChange={onFilterChange}
-          onSeeMore={() => {}}
-          onDelete={handleDelete}
-          searchLabel="Nome do usuário"
-        />
+        <>
+          <div className="flex gap-16 items-center justify-between">
+            <h1 className="font-bold text-xl">Gerenciamento de usuário</h1>
+            <GenericButton
+              onClick={handleRegister}
+              text="Cadastrar novo usuário"
+              icon={Icon.add}
+            />
+          </div>
+          <List
+            data={listUsers}
+            onFilterChange={onFilterChange}
+            onSeeMore={() => {}}
+            onDelete={handleDelete}
+            listEntity="usuário"
+          />
+        </>
       )}
     </div>
   );
