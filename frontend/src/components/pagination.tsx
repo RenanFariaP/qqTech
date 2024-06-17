@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -22,6 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
       onPageChange(currentPage + 1);
     }
   };
+
 
   return (
     <div className="flex justify-center items-center space-x-2 mt-1">

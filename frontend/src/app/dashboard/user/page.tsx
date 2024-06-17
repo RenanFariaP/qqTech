@@ -4,13 +4,14 @@ import List, { ListColumn, ListItem } from "@/components/list";
 import RegisterButton, { Icon } from "@/components/genericButton";
 import { users as mockUsers } from "../../../mocks/users";
 import { profiles as mockProfiles } from "../../../mocks/profile";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { User } from "@/types/user";
 import TextInput from "@/components/textInput";
 import SelectComponent from "@/components/select";
 import { Profile } from "@/types/profile";
 import ButtonInput from "@/components/buttonInput";
 import GenericButton from "@/components/genericButton";
+import { MultiValue } from "react-select";
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,7 +22,7 @@ const UserManagement = () => {
   const [email, setEmail] = useState("");
   const [registration, setRegistration] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedOption, setSelectedOption] = useState<Profile | null>(null);
+  const [selectedOption, setSelectedOption] = useState<MultiValue<Profile>>([]);
 
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser(e.target.value);
@@ -37,11 +38,9 @@ const UserManagement = () => {
     setPassword(e.target.value);
   };
 
-  const handleLinkedProfileChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    //setLinkedProfile(e.target.value);
-  };
+  const handleLinkedProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      //setSelectedOption(e.);
+    };
 
   const formatUsers = (data: User[]): ListItem<User>[] => {
     return data.map((user) => {
@@ -80,6 +79,11 @@ const UserManagement = () => {
     });
   };
 
+  const handleSubmit = async (event: FormEvent) =>{
+    
+    console.log()
+  }
+
   const onFilterChange = (value: string) => {
     const filteredUsers = users.filter(
       (item) =>
@@ -111,7 +115,7 @@ const UserManagement = () => {
               icon={Icon.return}
             />
           </div>
-          <form>
+          <form onSubmit={handleSubmit}>
             <h1></h1>
             <TextInput
               label="Nome do usuário"
@@ -145,7 +149,7 @@ const UserManagement = () => {
               value={password}
               onChange={handlePasswordChange}
             />
-            <SelectComponent options={mockProfiles} />
+            <SelectComponent options={mockProfiles} onChange={()=>handleLinkedProfileChange}/>
             <ButtonInput label="Enviar" />
           </form>
         </>

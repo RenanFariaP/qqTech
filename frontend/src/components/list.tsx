@@ -60,7 +60,16 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
     onFilterChange(searchQuery);
   }, [searchQuery]);
 
+  
   const totalPages = Math.ceil(data.length / itemsPerPage);
+  
+  // useEffect(()=>{
+  //   if(currentPage>totalPages){
+  //     setCurrentPage(totalPages);
+  //   } else if(currentPage === 1){
+  //     setCurrentPage(1);
+  //   }
+  // }, [handleDelete]);
 
   const paginatedUsers = data.slice(
     (currentPage - 1) * itemsPerPage,

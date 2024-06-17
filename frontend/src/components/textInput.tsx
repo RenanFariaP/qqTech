@@ -1,3 +1,4 @@
+"use client"
 import React, { ChangeEventHandler, useEffect, useState } from "react";
 import addIcon from "../../public/assets/svg/addIcon.svg";
 import revealPassword from "../../public/assets/svg/revealPassword.svg";
