@@ -19,3 +19,8 @@ def create_profile(db: Session, profile:schemas.ProfileCreate):
     db.commit()
     db.refresh(db_profile)
     return db_profile
+
+def delete_profile(db:Session, profile: schemas.Profile):
+    db.delete(profile)
+    db.commit()
+    return {"message": "Perfil deletado, verifique os usuários dependentes!"}

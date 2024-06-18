@@ -5,6 +5,8 @@ from .. import schemas,models
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
+
+#Rever -----------------------------
 def get_user_by_filter(db: Session, **filters):
     query = db.query(models.User)
     for field, value in filters.items():
@@ -37,3 +39,8 @@ def update_user(db: Session, db_user: models.User):
     except Exception as e:
         print(e)
         raise e
+    
+def delete_user(db:Session, user: schemas.User):
+    db.delete(user)
+    db.commit()
+    return {"message": "Usuário deletado!"}

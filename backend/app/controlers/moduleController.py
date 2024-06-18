@@ -14,8 +14,13 @@ def get_modules(db: Session, skip:int=0, limit:int=100):
     return db.query(models.Module).offset(skip).limit(limit).all()
 
 def create_module(db: Session, module:schemas.ModuleCreate):
-    db_module = models.Module(name=module.name, description=module.description)
+    db_module = models.Module(name=module.name, description=module.description, TAG=module.TAG, profile_id=module.profile_id)
     db.add(db_module)
     db.commit()
     db.refresh(db_module)
     return db_module
+
+def delete_module(db:Session, module: schemas.Module):
+    db.delete(module)
+    db.commit()
+    return {"message": "Módulo deletado!"}

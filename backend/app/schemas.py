@@ -40,7 +40,7 @@ class UserUpdate(BaseModel):
 
 class ModuleBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str = None
     TAG: str
     profile_id: int
 
@@ -56,7 +56,7 @@ class Module(ModuleBase):
 
 class TransactionBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str = None
     TAG: str
     module_id: int
 
@@ -72,7 +72,7 @@ class Transaction(TransactionBase):
 
 class MethodBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str = None
     TAG: str
     module_id: int
 
