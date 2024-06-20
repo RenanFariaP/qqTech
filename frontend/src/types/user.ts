@@ -1,9 +1,14 @@
+import { Profile } from "./profile";
+
 export interface User {
-    id: string;
-    name: string;
-    matricula: string;
-    profile: string;
+    id: number;
+    username: string;
+    registration: string;
+    profile_id: number;
     email: string;
     password: string;
   }
   
+export interface UserWithRelation extends User{
+  profile: Profile
+}

@@ -20,7 +20,7 @@ export interface ListItem<T> {
 interface Props<T> {
   data: ListItem<T>[];
   onFilterChange: (value: string) => void;
-  onDelete: (value: string | number) => void;
+  onDelete: (value: T) => void;
   onSeeMore: (value: string) => void;
   listEntity: string;
 }
@@ -51,7 +51,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
   const handleModalConfirm = () =>{
     console.log(selectedEntity)
     if(!selectedEntity) return;
-    onDelete(selectedEntity.uniqueIdentifier);
+    onDelete(selectedEntity.value);
     setIsOpen(false);
     setSelectedEntity(null);
   }
@@ -79,7 +79,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">
       <SearchInput
-        placeholder={`Nome do ${listEntity}`}
+        placeholder={`Nome d${listEntity}`}
         value={searchQuery}
         onChange={handleSearchChange}
       />

@@ -1,7 +1,6 @@
 export interface Profile {
     id: number;
-    label: string;
-    value: string;
+    name: string;
     description: string;
   }
   

@@ -1,110 +1,221 @@
 "use client";
 
 import List, { ListColumn, ListItem } from "@/components/list";
-import RegisterButton, { Icon } from "@/components/genericButton";
-import { users as mockUsers } from "../../../mocks/users";
-import { profiles as mockProfiles } from "../../../mocks/profile";
+import { Icon } from "@/components/genericButton";
 import React, { FormEvent, useEffect, useState } from "react";
-import { User } from "@/types/user";
+import { User, UserWithRelation } from "@/types/user";
 import TextInput from "@/components/textInput";
-import SelectComponent from "@/components/select";
-import { Profile } from "@/types/profile";
 import ButtonInput from "@/components/buttonInput";
 import GenericButton from "@/components/genericButton";
-import { MultiValue } from "react-select";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import axios, { AxiosError } from "axios";
+import { Profile } from "@/types/profile";
+import { ToastContainer, toast } from "react-toastify";
+import { Bounce } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+import { Error } from "@/types/error";
+
+interface UserCreateForm {
+  username: string;
+  email: string;
+  registration: string;
+  password: string;
+}
+
+interface SelectOptions<T> {
+  value: T;
+  label: string;
+}
 
 const UserManagement = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [listUsers, setListUsers] = useState<ListItem<User>[]>([]);
+  const [users, setUsers] = useState<UserWithRelation[]>([]);
+  const [profileOptions, setProfileOptions] = useState<
+    SelectOptions<Profile>[]
+  >([]);
+  const [userList, setUserList] = useState<ListItem<User>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const [user, setUser] = useState("");
-  const [email, setEmail] = useState("");
-  const [registration, setRegistration] = useState("");
-  const [password, setPassword] = useState("");
-  const [selectedOption, setSelectedOption] = useState<MultiValue<Profile>>([]);
+  const [selectedOption, setSelectedOption] =
+    useState<SelectOptions<Profile> | null>(null);
+  const [formData, setFormData] = useState<UserCreateForm>({
+    username: "",
+    email: "",
+    registration: "",
+    password: "",
+  });
 
-  const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser(e.target.value);
-  };
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-  const handleRegistrationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRegistration(e.target.value);
+  const notify = (type: string, message: any) => {
+    switch (type) {
+      case "error":
+        toast.error(`${message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        break;
+      case "sucess":
+        toast.success(`${message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        break;
+      default:
+        break;
+    }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const handleChange = (_name: keyof UserCreateForm, _value: any) => {
+    setFormData((prev) => ({ ...prev, [_name]: _value }));
   };
 
-  const handleLinkedProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      //setSelectedOption(e.);
-    };
+  const handleSelectChange = (selectedOption: any) => {
+    setSelectedOption(selectedOption);
+  };
 
-  const formatUsers = (data: User[]): ListItem<User>[] => {
+  const formatProfileOptions = (data: Profile[]): SelectOptions<Profile>[] => {
+    const options: SelectOptions<Profile>[] = data.map((profile) => ({
+      value: profile,
+      label: profile.name,
+    }));
+    return options;
+  };
+
+  const formatUsers = (
+    data: UserWithRelation[]
+  ): ListItem<UserWithRelation>[] => {
     return data.map((user) => {
-      const cols: ListColumn<User>[] = [
+      const cols: ListColumn<UserWithRelation>[] = [
         {
-          value: user.name,
+          value: user.username,
         },
         {
-          value: user.matricula,
+          value: user.registration,
         },
         {
           value: user.email,
         },
         {
-          value: user.profile,
+          value: user.profile.name,
         },
       ];
       return {
         value: user,
         uniqueIdentifier: user.id,
         cols,
-        label: user.name,
+        label: user.username,
       };
     });
   };
 
   const handleRegister = () => {
     setIsRegistering(!isRegistering);
+    formData.username = "";
+    formData.email = "";
+    formData.registration = "";
+    formData.password = "";
+    setSelectedOption(null);
   };
 
-  const handleDelete = (id: number | string) => {
+  const handleDelete = async (id: number | string) => {
     console.log(id);
-    setListUsers((prev) => {
-      const updatedUsers = prev.filter((user) => user.value.id !== id);
-      return updatedUsers;
-    });
+    try {
+      await axios.delete(`http://localhost:8000/dashboard/user/${id}`);
+    } catch (error) {
+      console.error("Erro ao deletar o usuário:", error);
+    } finally {
+      fetchUserList();
+    }
   };
 
-  const handleSubmit = async (event: FormEvent) =>{
-    
-    console.log()
-  }
+  const fetchUserList = async () => {
+    try {
+      const response = await axios.get<UserWithRelation[]>(
+        "http://localhost:8000/dashboard/user"
+      );
+      const { data } = response;
+      console.log(data);
+      const formatted = formatUsers(data);
+      setUsers(data);
+      setUserList(formatted);
+    } catch (error) {
+      console.error("Erro ao listar os usuários:", error);
+    }
+  };
+
+  const fetchProfileList = async () => {
+    try {
+      const response = await axios.get<Profile[]>(
+        `http://localhost:8000/dashboard/profile/`
+      );
+      const { data } = response;
+      const formatted = formatProfileOptions(data);
+      setProfileOptions(formatted);
+    } catch (error) {}
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!selectedOption) return;
+    try {
+      const form = {
+        username: formData.username,
+        email: formData.email,
+        registration: formData.registration,
+        password: formData.password,
+        profile_id: selectedOption.value.id,
+      };
+      const response = await axios.post(
+        "http://localhost:8000/dashboard/user",
+        form
+      );
+      console.log("Resposta do servidor:", response.data);
+      formData.username = "";
+      formData.email = "";
+      formData.registration = "";
+      formData.password = "";
+      setSelectedOption(null);
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      notify("error", message);
+    } finally {
+      fetchUserList();
+    }
+  };
 
   const onFilterChange = (value: string) => {
     const filteredUsers = users.filter(
       (item) =>
-        item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.matricula.toLowerCase().includes(value.toLowerCase()) ||
-        item.profile.toLowerCase().includes(value.toLowerCase())
+        item.username.toLowerCase().includes(value.toLowerCase()) ||
+        item.registration.toLowerCase().includes(value.toLowerCase()) ||
+        item.profile.name.toLowerCase().includes(value.toLowerCase())
     );
-    setListUsers(formatUsers(filteredUsers));
+    setUserList(formatUsers(filteredUsers));
   };
-
   useEffect(() => {
-    const fetchUsers = () => {
-      setUsers(mockUsers);
-      const formattedUsers = formatUsers(mockUsers);
-      setListUsers(formattedUsers);
-    };
-    fetchUsers();
+    fetchUserList();
+    fetchProfileList();
   }, []);
 
+  const animatedComponents = makeAnimated();
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
+      <ToastContainer />
       {isRegistering ? (
         <>
           <div className="flex gap-16 items-center justify-between">
@@ -120,37 +231,48 @@ const UserManagement = () => {
             <TextInput
               label="Nome do usuário"
               type="text"
-              name="user"
+              name="username"
               isRequired={true}
-              value={user}
-              onChange={handleUserChange}
+              value={formData.username}
+              onChange={(e) => handleChange("username", e.target.value)}
             />
             <TextInput
               label="E-mail"
               type="email"
               name="email"
               isRequired={true}
-              value={email}
-              onChange={handleEmailChange}
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
             <TextInput
               label="Matrícula"
               type="text"
               name="registration"
               isRequired={true}
-              value={registration}
-              onChange={handleRegistrationChange}
+              value={formData.registration}
+              onChange={(e) => handleChange("registration", e.target.value)}
             />
             <TextInput
               label="Senha"
               type="password"
               name="password"
               isRequired={true}
-              value={password}
-              onChange={handlePasswordChange}
+              value={formData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
             />
-            <SelectComponent options={mockProfiles} onChange={()=>handleLinkedProfileChange}/>
-            <ButtonInput label="Enviar" />
+            <div className="flex flex-col mt-5">
+              <Select
+                className="w-80"
+                closeMenuOnSelect={true}
+                components={animatedComponents}
+                defaultValue={[]}
+                name="options"
+                options={profileOptions}
+                onChange={handleSelectChange}
+                value={selectedOption}
+              />
+            </div>
+            <ButtonInput label="Enviar" onSubmit={() => handleSubmit} />
           </form>
         </>
       ) : (
@@ -164,11 +286,11 @@ const UserManagement = () => {
             />
           </div>
           <List
-            data={listUsers}
+            data={userList}
             onFilterChange={onFilterChange}
             onSeeMore={() => {}}
-            onDelete={handleDelete}
-            listEntity="usuário"
+            onDelete={(value) => handleDelete(value.id)}
+            listEntity="o usuário"
           />
         </>
       )}

@@ -1,19 +1,38 @@
 "use client";
 
 import List, { ListColumn, ListItem } from "@/components/list";
-import { transactions as mockTransactions } from "../../../mocks/transactions";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Transaction } from "@/types/transaction";
 import { getSession } from "next-auth/react";
 import { GetServerSidePropsContext } from "next";
 import GenericButton, { Icon } from "@/components/genericButton";
+import TextInput from "@/components/textInput";
+import TextArea from "@/components/textArea";
+import ButtonInput from "@/components/buttonInput";
+import axios from "axios";
+
+interface TransactionCreateForm {
+  name: string;
+  description: string;
+  TAG: string;
+}
 
 const TransactionManagement = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [listTransactions, setListTransactions] = useState<
+  const [transactionList, setTransactionList] = useState<
     ListItem<Transaction>[]
   >([]);
   const [isRegistering, setIsRegistering] = useState(false);
+
+  const [formData, setFormData] = useState<TransactionCreateForm>({
+    name: "",
+    description: "",
+    TAG: ""
+  });
+
+  const handleChange = (_name: keyof TransactionCreateForm, _value: any) => {
+    setFormData((prev)=>({...prev, [_name]: _value }));
+  };
 
   const formatTransactions = (data: Transaction[]): ListItem<Transaction>[] => {
     return data.map((transaction) => {
@@ -25,7 +44,7 @@ const TransactionManagement = () => {
           value: transaction.description,
         },
         {
-          value: transaction.tag,
+          value: transaction.TAG,
         },
       ];
       return {
@@ -41,13 +60,48 @@ const TransactionManagement = () => {
     setIsRegistering(!isRegistering);
   };
 
-  const handleDelete = (id: number | string) => {
-    setListTransactions((prev) => {
-      const updatedTransactions = prev.filter(
-        (transaction) => transaction.value.id !== id
-      );
-      return updatedTransactions;
-    });
+  const handleDelete = async(id: number | string) => {
+    console.log(id);
+    try {
+      const response = await axios.delete(`http://localhost:8000/dashboard/transaction/${id}`);
+    } catch (error) {
+      console.error("Erro ao deletar a transação:", error);
+    } finally {
+      fetchTransactionList();
+    }
+  };
+
+  const fetchTransactionList = async ()=>{
+    try {
+      const response = await axios.get<Transaction[]>("http://localhost:8000/dashboard/transaction");
+      const {data} = response;
+      const formatted = formatTransactions(data);
+      setTransactions(data);
+      console.log(data)
+      setTransactionList(formatted);
+    } catch (error) {
+      console.error("Erro ao listar as funções:", error);
+    }
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      const form = {
+        name: formData.name,
+        description: formData.description,
+        TAG: formData.TAG
+      }
+      const response = await axios.post("http://localhost:8000/dashboard/transaction", form);
+      console.log("Resposta do servidor:", response.data);
+      formData.name = "";
+      formData.description = "";
+      formData.TAG = "";
+    } catch (error) {
+      console.error("Erro ao enviar formulário:", error);
+    } finally {
+      fetchTransactionList();
+    }
   };
 
   const onFilterChange = (value: string) => {
@@ -56,40 +110,70 @@ const TransactionManagement = () => {
         item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
-    setListTransactions(formatTransactions(filteredTransactions));
+    setTransactionList(formatTransactions(filteredTransactions));
   };
 
   useEffect(() => {
     const fetchTransactions = () => {
-      setTransactions(mockTransactions);
-      const formattedTransactions = formatTransactions(mockTransactions);
-      setListTransactions(formattedTransactions);
     };
+    fetchTransactionList();
     fetchTransactions();
   }, []);
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
-      <div className="flex gap-16 items-center justify-between">
-        <h1 className="font-bold text-xl">Gerenciamento de transação</h1>
-        <GenericButton
-          onClick={handleRegister}
-          text="Voltar"
-          icon={Icon.return}
-        />
-      </div>
       {isRegistering ? (
-        <p>Cadastrando</p>
-      ) : (
-        <List
-          data={listTransactions}
+        <>
+        <div className="flex gap-16 items-center justify-between">
+          <h1 className="font-bold text-xl">Gerenciamento de Transação</h1>
+          <GenericButton
+            onClick={handleRegister}
+            text="Voltar"
+            icon={Icon.return}
+          />
+        </div>
+        <form onSubmit={handleSubmit}>
+          <h1></h1>
+          <TextInput
+            label="Nome da transação"
+            type="text"
+            name="name"
+            isRequired={true}
+            value={formData.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+          />
+          <TextArea label="da transação" name="description" value={formData.description} onChange={(e) => handleChange("description", e.target.value)}/>
+          <TextInput
+            label="TAG"
+            type="text"
+            name="TAG"
+            isRequired={true}
+            value={formData.TAG}
+            onChange={(e) => handleChange("TAG", e.target.value)}
+          />
+          <ButtonInput label="Enviar" onSubmit={() => handleSubmit} />
+        </form>
+      </>
+      ):(
+        <>
+          <div className="flex gap-16 items-center justify-between">
+            <h1 className="font-bold text-xl">Gerenciamento de Transação</h1>
+            <GenericButton
+              onClick={handleRegister}
+              text="Cadastrar novo usuário"
+              icon={Icon.add}
+            />
+          </div>
+          <List
+          data={transactionList}
           onFilterChange={onFilterChange}
           onSeeMore={() => {}}
           onDelete={handleDelete}
-          listEntity="a transação"
+          listEntity="a função"
         />
+        </>
       )}
-    </div>
+      </div>
   );
 };
 
