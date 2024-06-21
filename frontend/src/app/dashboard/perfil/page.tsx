@@ -15,7 +15,7 @@ const ProfileManagement = () => {
     return data.map((profile) => {
       const cols: ListColumn<Profile>[] = [
         {
-          value: profile.label,
+          value: profile.name,
         },
         {
           value: profile.description,
@@ -25,7 +25,7 @@ const ProfileManagement = () => {
         value: profile,
         uniqueIdentifier: profile.id,
         cols,
-        label: profile.label,
+        label: profile.name,
       };
     });
   };
@@ -40,7 +40,7 @@ const ProfileManagement = () => {
   const onFilterChange = (value: string) => {
     const filteredProfiles = profiles.filter(
       (item) =>
-        item.label.toLowerCase().includes(value.toLowerCase()) ||
+        item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
     setListProfiles(formatProfiles(filteredProfiles));
@@ -68,7 +68,7 @@ const ProfileManagement = () => {
           data={listProfiles}
           onFilterChange={onFilterChange}
           onSeeMore={() => {}}
-          onDelete={handleDelete}
+          onDelete={(value) => handleDelete(value.id)}
           listEntity="o perfil"
         />
       )}

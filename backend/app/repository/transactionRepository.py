@@ -10,6 +10,9 @@ def get_transaction(db: Session, transaction_id: int):
 def get_transaction_by_name(db: Session, name: str):
     return db.query(models.Transaction).filter(models.Transaction.name == name).first()
 
+def get_transaction_by_TAG(db: Session, TAG: str):
+    return db.query(models.Transaction).filter(models.Transaction.TAG == TAG).first()
+
 def get_transactions(db: Session, skip:int=0, limit:int=100):
     return db.query(models.Transaction).offset(skip).limit(limit).all()
 

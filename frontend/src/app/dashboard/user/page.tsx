@@ -9,13 +9,11 @@ import ButtonInput from "@/components/buttonInput";
 import GenericButton from "@/components/genericButton";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Profile } from "@/types/profile";
-import { ToastContainer, toast } from "react-toastify";
-import { Bounce } from "react-toastify";
-
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import { Error } from "@/types/error";
+import { notify } from "@/components/toast";
 
 interface UserCreateForm {
   username: string;
@@ -46,38 +44,6 @@ const UserManagement = () => {
     password: "",
   });
 
-  const notify = (type: string, message: any) => {
-    switch (type) {
-      case "error":
-        toast.error(`${message}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-        });
-        break;
-      case "sucess":
-        toast.success(`${message}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-        });
-        break;
-      default:
-        break;
-    }
-  };
 
   const handleChange = (_name: keyof UserCreateForm, _value: any) => {
     setFormData((prev) => ({ ...prev, [_name]: _value }));
@@ -183,7 +149,7 @@ const UserManagement = () => {
         "http://localhost:8000/dashboard/user",
         form
       );
-      console.log("Resposta do servidor:", response.data);
+      notify('sucess', 'Usuário cadastrado com sucesso!')
       formData.username = "";
       formData.email = "";
       formData.registration = "";
@@ -192,7 +158,7 @@ const UserManagement = () => {
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
-      notify("error", message);
+      notify('error', message);
     } finally {
       fetchUserList();
     }

@@ -71,7 +71,7 @@ const ModuleManagement = () => {
           data={listModules}
           onFilterChange={onFilterChange}
           onSeeMore={() => {}}
-          onDelete={handleDelete}
+          onDelete={(value) => handleDelete(value.id)}
           listEntity="o módulo"
         />
       )}

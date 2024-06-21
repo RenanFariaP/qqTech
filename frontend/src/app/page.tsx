@@ -33,7 +33,7 @@ export default function Login() {
         <TextInput label="Senha" type="password" name="password" isRequired={true} value={password} onChange={handlePasswordChange} bgColor="zinc-300"/>
       </div>
       <div>
-        <ButtonInput label="Entrar"/>
+        <ButtonInput label="Entrar" onSubmit={()=>{}}/>
       </div>
       <Link href="/recover_password" className="hover:underline">Esqueceu a senha?</Link>
     </form>

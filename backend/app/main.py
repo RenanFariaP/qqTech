@@ -36,6 +36,7 @@ async def get_home():
 
 
 #Profile
+#Create a profile
 @app.post("/dashboard/profile/",response_model=schemas.Profile)
 async def post_profile(profile:schemas.ProfileCreate, db:Session=Depends(get_db)):
     db_profile = profileRepository.get_profile_by_name(db, name=profile.name)
@@ -43,17 +44,19 @@ async def post_profile(profile:schemas.ProfileCreate, db:Session=Depends(get_db)
         raise HTTPException(status_code=400, detail="Perfil já cadastrado!")
     return profileRepository.create_profile(db=db,profile=profile)
 
+#Get all profiles
 @app.get("/dashboard/profile/", response_model=list[schemas.Profile])
 async def get_profiles(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     profiles = profileRepository.get_profiles(db,skip=skip,limit=limit)
     return profiles
 
+#Get profile by ID
 @app.get("/dashboard/profile/{profile_id}", response_model=schemas.Profile)
 async def get_profile_by_id(profile_id: int, db:Session=Depends(get_db)):
     db_profile = profileRepository.get_profile(db, profile_id=profile_id)
     return db_profile
 
-
+#Delete a profile by id
 @app.delete("/dashboard/profile/{profile_id}", response_model = dict)
 async def delete_profile(profile_id: int, db: Session = Depends(get_db)):
     db_profile = profileRepository.get_profile(db, profile_id)
@@ -63,6 +66,7 @@ async def delete_profile(profile_id: int, db: Session = Depends(get_db)):
 
 
 #User
+#Create an user
 @app.post("/dashboard/user/",response_model=schemas.User)
 async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
     db_user_email = userRepository.get_user_by_email(db, email=user.email)
@@ -73,16 +77,19 @@ async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
         raise HTTPException(status_code=400, detail="A matrícula já está vinculada a outro usuário!")
     return userRepository.create_user(db=db,user=user)
 
+#Get all users
 @app.get("/dashboard/user/", response_model=list[schemas.UserWithRelation])
 async def get_users(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     users = userRepository.get_users(db,skip=skip,limit=limit)
     return users
 
+#Get user by ID
 @app.get("/dashboard/user/{user_id}", response_model=schemas.User)
 async def get_user_by_id(user_id: int, db:Session=Depends(get_db)):
     db_user = userRepository.get_user(db, user_id=user_id)
     return db_user
 
+#Modify an user
 @app.put("/dashboard/user/{user_id}", response_model=schemas.UserUpdate)
 async def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
     try:
@@ -100,6 +107,7 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depe
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+#Delete an user by ID
 @app.delete("/dashboard/user/{user_id}", response_model = dict)
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     db_user = userRepository.get_user(db, user_id)
@@ -133,11 +141,15 @@ async def delete_module(module_id: int, db: Session = Depends(get_db)):
     return moduleRepository.delete_module(db=db, module=db_module)
 
 #Transaction
+#Create a transaction
 @app.post("/dashboard/transaction/",response_model=schemas.Transaction)
 async def post_transaction(transaction:schemas.TransactionCreate, db:Session=Depends(get_db)):
-    db_transaction = transactionRepository.get_transaction_by_name(db, name=transaction.name)
-    if db_transaction:
-        raise HTTPException(status_code=400, detail="Transação já cadastrada!")
+    db_transaction_name = transactionRepository.get_transaction_by_name(db, name=transaction.name)
+    if db_transaction_name:
+        raise HTTPException(status_code=400, detail="Já existe uma transação com esse nome!")
+    db_transaction_TAG = transactionRepository.get_transaction_by_TAG(db, TAG=transaction.TAG)
+    if db_transaction_TAG:
+        raise HTTPException(status_code=400, detail="Já existe uma transação com essa TAG!")
     return transactionRepository.create_transaction(db=db,transaction=transaction)
 
 @app.get("/dashboard/transaction/", response_model=list[schemas.Transaction])

@@ -164,7 +164,7 @@ const FunctionManagement = () => {
           data={methodList}
           onFilterChange={onFilterChange}
           onSeeMore={() => {}}
-          onDelete={handleDelete}
+          onDelete={(value) => handleDelete(value.id)}
           listEntity="a função"
         />
         </>

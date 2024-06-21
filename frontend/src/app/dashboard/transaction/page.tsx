@@ -10,6 +10,9 @@ import TextInput from "@/components/textInput";
 import TextArea from "@/components/textArea";
 import ButtonInput from "@/components/buttonInput";
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import { notify } from "@/components/toast";
+import { Error } from "@/types/error";
 
 interface TransactionCreateForm {
   name: string;
@@ -19,9 +22,7 @@ interface TransactionCreateForm {
 
 const TransactionManagement = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [transactionList, setTransactionList] = useState<
-    ListItem<Transaction>[]
-  >([]);
+  const [transactionList, setTransactionList] = useState<ListItem<Transaction>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const [formData, setFormData] = useState<TransactionCreateForm>({
@@ -93,12 +94,15 @@ const TransactionManagement = () => {
         TAG: formData.TAG
       }
       const response = await axios.post("http://localhost:8000/dashboard/transaction", form);
+      notify('sucess', 'Transação cadastrada com sucesso!');
       console.log("Resposta do servidor:", response.data);
       formData.name = "";
       formData.description = "";
       formData.TAG = "";
     } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
+      const e = error as Error;
+      const message = e.response.data.detail;
+      notify('error', message);
     } finally {
       fetchTransactionList();
     }
@@ -122,6 +126,7 @@ const TransactionManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
+      <ToastContainer />
       {isRegistering ? (
         <>
         <div className="flex gap-16 items-center justify-between">
@@ -168,7 +173,7 @@ const TransactionManagement = () => {
           data={transactionList}
           onFilterChange={onFilterChange}
           onSeeMore={() => {}}
-          onDelete={handleDelete}
+          onDelete={(value) => handleDelete(value.id)}
           listEntity="a função"
         />
         </>
