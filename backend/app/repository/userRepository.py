@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import schemas,models
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
-
 
 #Rever -----------------------------
 def get_user_by_filter(db: Session, **filters):
@@ -25,6 +27,10 @@ def get_user_by_registration(db: Session, registration: str):
 
 def get_users(db: Session, skip:int=0, limit:int=100):
     return db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
 
 def create_user(db: Session, user:schemas.UserCreate):
     db_user = models.User(username=user.username, email=user.email, registration=user.registration, password=user.password, profile_id=user.profile_id)

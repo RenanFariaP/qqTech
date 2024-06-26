@@ -23,7 +23,14 @@ class UserUpdate(BaseModel):
     registration: Optional[str] = None
     password: Optional[str] = None
     profile_id: Optional[int] = None
+   
+class LoginRequest(BaseModel):
+    email: str
+    password: str
     
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 class User(UserBase):
 

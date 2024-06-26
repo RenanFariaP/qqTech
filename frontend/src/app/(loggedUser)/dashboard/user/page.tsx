@@ -12,8 +12,9 @@ import makeAnimated from "react-select/animated";
 import axios from "axios";
 import { Profile } from "@/types/profile";
 import { ToastContainer } from "react-toastify";
-import { Error } from "@/types/error";
+
 import { notify } from "@/components/toast";
+import { Error } from "@/types/error";
 
 interface UserCreateForm {
   username: string;

@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import timedelta
 
 
 from . import crud,models, schemas
-from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository
+from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 origins = [
     "http://localhost:3000",
 ]
@@ -23,16 +23,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 def get_db():
     db = SessionLocal()
     try : 
         yield db
     finally:
         db.close()
-
-@app.get("/")
-async def get_home():
-    return "API no ar"
+        
+        
+#Login authentication
+@app.post('/')
+async def login(request: schemas.LoginRequest, db:Session=Depends(get_db)):
+    db_user = userRepository.get_user_by_email(db, email=request.email)
+    verify_password = loginRepository.verify_password(request.password, db_user.password )
+    if db_user and verify_password:
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
+        return {"access_token": access_token, "token_type": "bearer"}
+    raise HTTPException(status_code=401, detail="Invalid email or password")
 
 
 #Profile
@@ -66,6 +76,7 @@ async def delete_profile(profile_id: int, db: Session = Depends(get_db)):
 
 
 #User
+
 #Create an user
 @app.post("/dashboard/user/",response_model=schemas.User)
 async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
@@ -75,7 +86,15 @@ async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
     db_user_registration = userRepository.get_user_by_registration(db, registration=user.registration)
     if db_user_registration:
         raise HTTPException(status_code=400, detail="A matrícula já está vinculada a outro usuário!")
-    return userRepository.create_user(db=db,user=user)
+    hashed_password = userRepository.get_password_hash(user.password)
+    db_user = models.User(
+        username = user.username,
+        email = user.email,
+        registration = user.registration,
+        password = hashed_password,
+        profile_id = user.profile_id
+    )
+    return userRepository.create_user(db=db,user=db_user)
 
 #Get all users
 @app.get("/dashboard/user/", response_model=list[schemas.UserWithRelation])
@@ -114,6 +133,7 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado!")
     return userRepository.delete_user(db=db, user=db_user)
+
 
 #Module
 @app.post("/dashboard/module/",response_model=schemas.Module)

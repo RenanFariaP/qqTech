@@ -2,7 +2,7 @@ import React from 'react'
 
 type Input = {
     label: string;
-    onSubmit: ()=>void;
+    onSubmit?: ()=>void;
 }
 
 const ButtonInput = (props: Input) => {

@@ -1,7 +1,14 @@
+import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
 import NavBarItem from "@/components/navBarItem";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import React from "react";
 
-function Dashboard({ children }: { children: React.ReactNode }) {
+async function Dashboard({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(nextAuthOptions);
+  if(!session){
+    redirect('/');
+  }
   return (
     <section className="flex w-full h-full">
       <div className="w-80 bg-white h-full flex flex-col gap-5 justify-center shadow-md p-2">
