@@ -61,6 +61,7 @@ class Transaction(Base):
     name = Column(String(255), unique=True, nullable=False)
     description = Column(String(255))
     TAG = Column(String(5), unique=True, nullable=False)
+    #modules: Mapped[List['Module']] = relationship(secondary=modules_methods, back_populates="transactions")
     #modules = relationship('Module', secondary=modules_transactions, back_populates='transactions')
 
 class Method(Base):
@@ -69,4 +70,5 @@ class Method(Base):
     name = Column(String(255), unique=True, nullable=False)
     description = Column(String(255))
     TAG = Column(String(5), unique=True, nullable=False)
+    #modules: Mapped[List['Module']] = relationship(secondary=modules_transactions, back_populates="methods")
     #modules = relationship('Module', secondary=modules_methods, back_populates='methods')

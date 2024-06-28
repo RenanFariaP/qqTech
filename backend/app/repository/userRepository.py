@@ -20,7 +20,6 @@ def get_user_by_registration(db: Session, registration: str):
     return db.query(models.User).filter(models.User.registration == registration).first()
 
 def get_users(db: Session, skip:int=0, limit:int=100):
-    result = db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
     return db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
 
 def get_password_hash(password: str) -> str:

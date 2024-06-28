@@ -27,11 +27,10 @@ interface SelectOptions<T> {
 
 const ProfileManagement = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [listProfiles, setListProfiles] = useState<ListItem<Profile>[]>([]);
+  const [profileList, setProfileList] = useState<ListItem<Profile>[]>([]);
   const [moduleOptions, setModuleOptions] = useState<SelectOptions<Module>[]>([]);
   const [moduleSelectedOption, setModuleSelectedOption] = useState<[SelectOptions<Module>]| null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [profileList, setProfileList] = useState<ListItem<Profile>[]>([]);
   const [formData, setFormData] = useState<ProfileCreateForm>({
     name: "",
     description: ""
@@ -112,9 +111,9 @@ const ProfileManagement = () => {
       const response = await axios.delete(
         `http://localhost:8000/dashboard/profile/${id}`
       );
-      Notify("success", "Módulo deletado com sucesso!");
+      Notify("success", "Perfil deletado com sucesso!");
     } catch (error) {
-      Notify("error", "Não foi possível deletar o módulo!");
+      Notify("error", "Não foi possível deletar o Perfil!");
     } finally {
       fetchProfileList();
     }
@@ -155,7 +154,7 @@ const ProfileManagement = () => {
         item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
-    setListProfiles(formatProfiles(filteredProfiles));
+    setProfileList(formatProfiles(filteredProfiles));
   };
 
   useEffect(() => {

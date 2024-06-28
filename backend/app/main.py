@@ -163,7 +163,7 @@ async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
     db_module_TAG = moduleRepository.get_module_by_TAG(db, TAG=module.TAG)
     if db_module_TAG:
         raise HTTPException(status_code=400, detail="Já existe um módulo com essa TAG!")
-    return moduleRepository.create_module(db=db,module=module)
+    return moduleRepository.create_module_with_methods_and_transactions(db=db,module=module)
 
 @app.get("/dashboard/module/", response_model=list[Module])
 async def get_modules(skip:int=0, limit:int=100, db:Session=Depends(get_db)):

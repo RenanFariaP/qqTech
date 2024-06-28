@@ -11,7 +11,6 @@ from app.schemas.transaction.base import TransactionBase
 from app.schemas.user.base import UserBase
 
 class Method(MethodBase):
-    modules: List["Module"] = []
 
     class Config:
         orm_mode = True
@@ -33,7 +32,6 @@ class Profile(ProfileBase):
         
 
 class Transaction(TransactionBase):
-    modules: List[Module] = []
 
     class Config:
         orm_mode = True

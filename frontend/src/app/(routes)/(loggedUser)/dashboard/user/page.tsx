@@ -30,9 +30,7 @@ interface SelectOptions<T> {
 
 const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRelation[]>([]);
-  const [profileOptions, setProfileOptions] = useState<
-    SelectOptions<Profile>[]
-  >([]);
+  const [profileOptions, setProfileOptions] = useState<SelectOptions<Profile>[]>([]);
   const [userList, setUserList] = useState<ListItem<User>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
 
