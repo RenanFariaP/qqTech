@@ -4,8 +4,8 @@ from .database import Base
 
 profiles_modules = Table(
     'profiles_modules', Base.metadata,
-    Column('profile_id', Integer, ForeignKey('profiles.id'), primary_key=True),
-    Column('module_id', Integer, ForeignKey('modules.id'), primary_key=True)
+    Column('profile_id', Integer, ForeignKey('profiles.id')),
+    Column('module_id', Integer, ForeignKey('modules.id'))
 )
 
 modules_transactions = Table(

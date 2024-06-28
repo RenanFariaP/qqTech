@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.schemas.transaction import create, config
+from app.schemasTest import Transaction
 from .. import models
 
 
@@ -23,7 +24,7 @@ def create_transaction(db: Session, transaction:create.TransactionCreate):
     db.refresh(db_transaction)
     return db_transaction
 
-def delete_transaction(db:Session, transaction: config.Transaction):
+def delete_transaction(db:Session, transaction: Transaction):
     db.delete(transaction)
     db.commit()
     return {"message": "Transação deletada!"}

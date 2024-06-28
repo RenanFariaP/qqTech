@@ -7,16 +7,20 @@ from typing import List
 from . import models
 from app.schemas.user.loginsch import LoginRequest
 from app.schemas.profile.create import ProfileCreate
-from app.schemas.profile.config import Profile
+#from app.schemas.profile.config import Profile
+from app.schemasTest import Profile
 from app.schemas.module.create import ModuleCreate
-from app.schemas.module.config import Module
+#from app.schemas.module.config import Module
+from app.schemasTest import Module
 from app.schemas.method.create import MethodCreate
-from app.schemas.method.config import Method
+#from app.schemas.method.config import Method
+from app.schemasTest import Method
 from app.schemas.transaction.create import TransactionCreate
-from app.schemas.transaction.config import Transaction
+from app.schemasTest import Transaction
 from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UserUpdate
-from app.schemas.user.config import User
+#from app.schemas.user.config import User
+from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
 
 
@@ -168,7 +172,7 @@ async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
         raise HTTPException(status_code=400, detail="Já existe um módulo com esse nome!")
     db_module_TAG = moduleRepository.get_module_by_TAG(db, TAG=module.TAG)
     if db_module_TAG:
-        raise HTTPException(status_code=400, detail="Já existe um módulo com esse nome!")
+        raise HTTPException(status_code=400, detail="Já existe um módulo com essa TAG!")
     return moduleRepository.create_module(db=db,module=module)
 
 @app.get("/dashboard/module/", response_model=list[Module])
@@ -218,11 +222,14 @@ async def delete_transaction(transaction_id: int, db: Session = Depends(get_db))
     return transactionRepository.delete_transaction(db=db, transaction=db_transaction)
 
 #Method
-@app.post("/dashboard/method/",response_model=Method)
+@app.post("/dashboard/method/", response_model=Method)
 async def post_method(method:MethodCreate, db:Session=Depends(get_db)):
-    db_method = methodRepository.get_method_by_name(db, name=method.name)
-    if db_method:
-        raise HTTPException(status_code=400, detail="Transação já cadastrada!")
+    db_method_name = methodRepository.get_method_by_name(db, name=method.name)
+    if db_method_name:
+        raise HTTPException(status_code=400, detail="Já existe uma função com esse nome!")
+    db_method_TAG = methodRepository.get_method_by_TAG(db, TAG=method.TAG)
+    if db_method_TAG:
+        raise HTTPException(status_code=400, detail="Já existe uma função com essa TAG!")
     return methodRepository.create_method(db=db,method=method)
 
 @app.get("/dashboard/method/", response_model=list[Method])

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.schemas.profile import create, config
+from app.schemasTest import Profile
 from .. import models
+from fastapi import HTTPException
 
 
 def get_profile(db: Session, profile_id: int):
@@ -34,7 +36,8 @@ def create_profile_with_modules(db: Session, profile: create.ProfileCreate):
     db.refresh(db_profile)
     return db_profile
 
-def delete_profile(db:Session, profile: config.Profile):
+
+def delete_profile(db:Session, profile: Profile):
     db.delete(profile)
     db.commit()
     return {"message": "Perfil deletado, verifique os usuários dependentes!"}

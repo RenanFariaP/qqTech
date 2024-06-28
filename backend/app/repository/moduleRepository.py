@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.schemas.module import create, config
+from app.schemasTest import Module
 from .. import models
 
 
@@ -24,7 +25,7 @@ def create_module(module: create.ModuleCreate, db: Session):
     db.refresh(db_module)
     return db_module
 
-def delete_module(db:Session, module: config.Module):
+def delete_module(db:Session, module: Module):
     db.delete(module)
     db.commit()
     return {"message": "Módulo deletado!"}

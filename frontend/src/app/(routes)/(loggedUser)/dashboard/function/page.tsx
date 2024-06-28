@@ -10,6 +10,7 @@ import axios from "axios";
 import ButtonInput from "@/components/buttonInput";
 import { Notify } from "@/components/toast";
 import { Error } from "@/types/error";
+import { ToastContainer } from "react-toastify";
 
 interface MethodCreateForm {
   name: string;
@@ -91,7 +92,8 @@ const FunctionManagement = () => {
       }
       console.log(form)
       const response = await axios.post("http://localhost:8000/dashboard/method", form);
-      Notify('success', 'Perfil cadastrado com sucesso!');
+      console.log('Função cadastrada com sucesso!')
+      Notify('success', 'Função cadastrada com sucesso!');
       formData.name = "";
       formData.description = "";
       formData.TAG = "";
@@ -122,6 +124,7 @@ const FunctionManagement = () => {
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full h-full">
+    <ToastContainer />
       {isRegistering ? (
         <>
         <div className="flex gap-16 items-center justify-between">

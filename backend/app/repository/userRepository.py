@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from .. import models
 from passlib.context import CryptContext
 from app.schemas.user import create, config
+from app.schemasTest import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -53,7 +54,7 @@ def update_user(db: Session, db_user: models.User):
         print(e)
         raise e
     
-def delete_user(db:Session, user: config.User):
+def delete_user(db:Session, user: User):
     db.delete(user)
     db.commit()
     return {"message": "Usuário deletado!"}

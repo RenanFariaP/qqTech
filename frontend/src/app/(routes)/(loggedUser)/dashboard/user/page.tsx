@@ -102,8 +102,9 @@ const UserManagement = () => {
     console.log(id);
     try {
       await axios.delete(`http://localhost:8000/dashboard/user/${id}`);
+      Notify('success', 'Perfil deletado com sucesso!');
     } catch (error) {
-      console.error("Erro ao deletar o usuário:", error);
+      Notify('error', 'Não foi possível deletar o perfil!');
     } finally {
       fetchUserList();
     }
@@ -119,7 +120,7 @@ const UserManagement = () => {
       setUsers(data);
       setUserList(formatted);
     } catch (error) {
-      console.error("Erro ao listar os usuários:", error);
+      Notify('error', 'Não foi possível listar os usuários cadastrados!');
     }
   };
 
@@ -131,13 +132,16 @@ const UserManagement = () => {
       const { data } = response;
       const formatted = formatProfileOptions(data);
       setProfileOptions(formatted);
-    } catch (error) {}
+    } catch (error) {
+      Notify('error', 'Não foi possível listar os perfis cadastrados!');
+    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!profileSelectedOption) return;
     try {
+      console.log(profileSelectedOption);
       const form = {
         username: formData.username,
         email: formData.email,
