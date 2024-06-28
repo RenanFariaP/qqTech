@@ -2,9 +2,24 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
+from typing import List
+
+from . import models
+from app.schemas.user.loginsch import LoginRequest
+from app.schemas.profile.create import ProfileCreate
+from app.schemas.profile.config import Profile
+from app.schemas.module.create import ModuleCreate
+from app.schemas.module.config import Module
+from app.schemas.method.create import MethodCreate
+from app.schemas.method.config import Method
+from app.schemas.transaction.create import TransactionCreate
+from app.schemas.transaction.config import Transaction
+from app.schemas.user.create import UserCreate
+from app.schemas.user.update import UserUpdate
+from app.schemas.user.config import User
+from app.schemas.user.relation import UserWithRelation
 
 
-from . import crud,models, schemas
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from .database import SessionLocal, engine
 
@@ -34,34 +49,44 @@ def get_db():
         
         
 #Login authentication
-@app.post('/')
-async def login(request: schemas.LoginRequest, db:Session=Depends(get_db)):
+@app.post('/login')
+async def login(request: LoginRequest, db:Session=Depends(get_db)):
     db_user = userRepository.get_user_by_email(db, email=request.email)
     verify_password = loginRepository.verify_password(request.password, db_user.password )
     if db_user and verify_password:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
-        return {"access_token": access_token, "token_type": "bearer"}
-    raise HTTPException(status_code=401, detail="Invalid email or password")
+        return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
+    raise HTTPException(status_code=400, detail="Email ou senha inválido!")
 
 
 #Profile
 #Create a profile
-@app.post("/dashboard/profile/",response_model=schemas.Profile)
-async def post_profile(profile:schemas.ProfileCreate, db:Session=Depends(get_db)):
+@app.post("/dashboard/profile/",response_model=Profile)
+async def post_profile(profile:ProfileCreate, db:Session=Depends(get_db)):
     db_profile = profileRepository.get_profile_by_name(db, name=profile.name)
     if db_profile:
         raise HTTPException(status_code=400, detail="Perfil já cadastrado!")
-    return profileRepository.create_profile(db=db,profile=profile)
+    return profileRepository.create_profile_with_modules(db=db,profile=profile)
 
 #Get all profiles
-@app.get("/dashboard/profile/", response_model=list[schemas.Profile])
+@app.get("/dashboard/profile/", response_model=List[Profile])
 async def get_profiles(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
-    profiles = profileRepository.get_profiles(db,skip=skip,limit=limit)
-    return profiles
+    profiles = profileRepository.get_profiles(db, skip=skip, limit=limit)
+    response_profiles = []
+    for profile in profiles:
+        profile_dict = {
+            "id": profile.id,
+            "name": profile.name,
+            "description": profile.description,
+            "users": [user.id for user in profile.users],
+            "modules": [module.id for module in profile.modules]
+        }
+        response_profiles.append(profile_dict)
+    return response_profiles
 
 #Get profile by ID
-@app.get("/dashboard/profile/{profile_id}", response_model=schemas.Profile)
+@app.get("/dashboard/profile/{profile_id}", response_model=Profile)
 async def get_profile_by_id(profile_id: int, db:Session=Depends(get_db)):
     db_profile = profileRepository.get_profile(db, profile_id=profile_id)
     return db_profile
@@ -78,8 +103,8 @@ async def delete_profile(profile_id: int, db: Session = Depends(get_db)):
 #User
 
 #Create an user
-@app.post("/dashboard/user/",response_model=schemas.User)
-async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
+@app.post("/dashboard/user/",response_model=User)
+async def post_user(user:UserCreate, db:Session=Depends(get_db)):
     db_user_email = userRepository.get_user_by_email(db, email=user.email)
     if db_user_email:
         raise HTTPException(status_code=400, detail="O email já está vinculado a outro usuário!")
@@ -87,7 +112,7 @@ async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
     if db_user_registration:
         raise HTTPException(status_code=400, detail="A matrícula já está vinculada a outro usuário!")
     hashed_password = userRepository.get_password_hash(user.password)
-    db_user = models.User(
+    db_user = UserCreate(
         username = user.username,
         email = user.email,
         registration = user.registration,
@@ -97,20 +122,20 @@ async def post_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
     return userRepository.create_user(db=db,user=db_user)
 
 #Get all users
-@app.get("/dashboard/user/", response_model=list[schemas.UserWithRelation])
+@app.get("/dashboard/user/", response_model=list[UserWithRelation])
 async def get_users(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     users = userRepository.get_users(db,skip=skip,limit=limit)
     return users
 
 #Get user by ID
-@app.get("/dashboard/user/{user_id}", response_model=schemas.User)
+@app.get("/dashboard/user/{user_id}", response_model=User)
 async def get_user_by_id(user_id: int, db:Session=Depends(get_db)):
     db_user = userRepository.get_user(db, user_id=user_id)
     return db_user
 
 #Modify an user
-@app.put("/dashboard/user/{user_id}", response_model=schemas.UserUpdate)
-async def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
+@app.put("/dashboard/user/{user_id}", response_model=UserUpdate)
+async def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     try:
         db_user = userRepository.get_user(db, user_id)
         if db_user is None:
@@ -120,7 +145,7 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depe
         db_user.registration = user.registration
         db_user.password = user.password
         db_user.profile_id = user.profile_dict
-        return crud.update_user(db, db_user)
+        return userRepository.update_user(db, db_user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -136,19 +161,22 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 
 #Module
-@app.post("/dashboard/module/",response_model=schemas.Module)
-async def post_module(module:schemas.ModuleCreate, db:Session=Depends(get_db)):
-    db_module = moduleRepository.get_module_by_name(db, name=module.name)
-    if db_module:
-        raise HTTPException(status_code=400, detail="Módulo já cadastrado!")
+@app.post("/dashboard/module/",response_model=Module)
+async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
+    db_module_name = moduleRepository.get_module_by_name(db, name=module.name)
+    if db_module_name:
+        raise HTTPException(status_code=400, detail="Já existe um módulo com esse nome!")
+    db_module_TAG = moduleRepository.get_module_by_TAG(db, TAG=module.TAG)
+    if db_module_TAG:
+        raise HTTPException(status_code=400, detail="Já existe um módulo com esse nome!")
     return moduleRepository.create_module(db=db,module=module)
 
-@app.get("/dashboard/module/", response_model=list[schemas.Module])
+@app.get("/dashboard/module/", response_model=list[Module])
 async def get_modules(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     modules = moduleRepository.get_modules(db,skip=skip,limit=limit)
     return modules
 
-@app.get("/dashboard/module/{module_id}", response_model=schemas.Module)
+@app.get("/dashboard/module/{module_id}", response_model=Module)
 async def get_module_by_id(module_id: int, db:Session=Depends(get_db)):
     db_module = moduleRepository.get_module(db, module_id=module_id)
     return db_module
@@ -162,8 +190,8 @@ async def delete_module(module_id: int, db: Session = Depends(get_db)):
 
 #Transaction
 #Create a transaction
-@app.post("/dashboard/transaction/",response_model=schemas.Transaction)
-async def post_transaction(transaction:schemas.TransactionCreate, db:Session=Depends(get_db)):
+@app.post("/dashboard/transaction/",response_model=Transaction)
+async def post_transaction(transaction:TransactionCreate, db:Session=Depends(get_db)):
     db_transaction_name = transactionRepository.get_transaction_by_name(db, name=transaction.name)
     if db_transaction_name:
         raise HTTPException(status_code=400, detail="Já existe uma transação com esse nome!")
@@ -172,12 +200,12 @@ async def post_transaction(transaction:schemas.TransactionCreate, db:Session=Dep
         raise HTTPException(status_code=400, detail="Já existe uma transação com essa TAG!")
     return transactionRepository.create_transaction(db=db,transaction=transaction)
 
-@app.get("/dashboard/transaction/", response_model=list[schemas.Transaction])
+@app.get("/dashboard/transaction/", response_model=list[Transaction])
 async def get_transactions(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     transactions = transactionRepository.get_transactions(db,skip=skip,limit=limit)
     return transactions
 
-@app.get("/dashboard/transaction/{transaction_id}", response_model=schemas.Transaction)
+@app.get("/dashboard/transaction/{transaction_id}", response_model=Transaction)
 async def get_transaction_by_id(transaction_id: int, db:Session=Depends(get_db)):
     db_transaction = transactionRepository.get_transaction(db, transaction_id=transaction_id)
     return db_transaction
@@ -190,19 +218,19 @@ async def delete_transaction(transaction_id: int, db: Session = Depends(get_db))
     return transactionRepository.delete_transaction(db=db, transaction=db_transaction)
 
 #Method
-@app.post("/dashboard/method/",response_model=schemas.Method)
-async def post_method(method:schemas.MethodCreate, db:Session=Depends(get_db)):
+@app.post("/dashboard/method/",response_model=Method)
+async def post_method(method:MethodCreate, db:Session=Depends(get_db)):
     db_method = methodRepository.get_method_by_name(db, name=method.name)
     if db_method:
         raise HTTPException(status_code=400, detail="Transação já cadastrada!")
     return methodRepository.create_method(db=db,method=method)
 
-@app.get("/dashboard/method/", response_model=list[schemas.Method])
+@app.get("/dashboard/method/", response_model=list[Method])
 async def get_methods(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     methods = methodRepository.get_methods(db,skip=skip,limit=limit)
     return methods
 
-@app.get("/dashboard/method/{method_id}", response_model=schemas.Method)
+@app.get("/dashboard/method/{method_id}", response_model=Method)
 async def get_method_by_id(method_id: int, db:Session=Depends(get_db)):
     db_method = methodRepository.get_method(db, method_id=method_id)
     return db_method

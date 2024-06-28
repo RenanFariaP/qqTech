@@ -2,21 +2,18 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship, declarative_base
 from .database import Base
 
-# Tabela de junção profiles_modules
 profiles_modules = Table(
     'profiles_modules', Base.metadata,
     Column('profile_id', Integer, ForeignKey('profiles.id'), primary_key=True),
     Column('module_id', Integer, ForeignKey('modules.id'), primary_key=True)
 )
 
-# Tabela de junção modules_transactions
 modules_transactions = Table(
     'modules_transactions', Base.metadata,
     Column('module_id', Integer, ForeignKey('modules.id'), primary_key=True),
     Column('transaction_id', Integer, ForeignKey('transactions.id'), primary_key=True)
 )
 
-# Tabela de junção modules_methods
 modules_methods = Table(
     'modules_methods', Base.metadata,
     Column('module_id', Integer, ForeignKey('modules.id'), primary_key=True),

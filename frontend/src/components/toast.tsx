@@ -8,7 +8,8 @@ interface Props {
     message: string
 }
 
-export const notify = (type: string, message: string) => {
+export const Notify = (type: string, message: string) => {
+  console.log('entrou')
     switch (type) {
       case "error":
         toast.error(`${message}`, {
@@ -23,7 +24,7 @@ export const notify = (type: string, message: string) => {
           transition: Bounce,
         });
         break;
-      case "sucess":
+      case "success":
         toast.success(`${message}`, {
           position: "bottom-right",
           autoClose: 5000,

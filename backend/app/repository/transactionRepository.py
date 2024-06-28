@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-
-from .. import schemas,models
+from app.schemas.transaction import create, config
+from .. import models
 
 
 def get_transaction(db: Session, transaction_id: int):
@@ -16,14 +16,14 @@ def get_transaction_by_TAG(db: Session, TAG: str):
 def get_transactions(db: Session, skip:int=0, limit:int=100):
     return db.query(models.Transaction).offset(skip).limit(limit).all()
 
-def create_transaction(db: Session, transaction:schemas.TransactionCreate):
+def create_transaction(db: Session, transaction:create.TransactionCreate):
     db_transaction = models.Transaction(name=transaction.name, description=transaction.description, TAG=transaction.TAG)
     db.add(db_transaction)
     db.commit()
     db.refresh(db_transaction)
     return db_transaction
 
-def delete_transaction(db:Session, transaction: schemas.Transaction):
+def delete_transaction(db:Session, transaction: config.Transaction):
     db.delete(transaction)
     db.commit()
     return {"message": "Transação deletada!"}
