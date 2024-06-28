@@ -90,8 +90,8 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
             className="flex justify-between bg-[#418713] rounded-md text-white font-semibold p-5"
           >
             <div className="flex items-center">
-              {data.cols.map((column) => (
-                <p className="mx-2 text-start text-wrap min-w-80" key={column.value}>
+              {data.cols.map((column, index) => (
+                <p className="mx-2 text-start text-wrap min-w-80" key={column.value+index}>
                   {column.value}
                 </p>
               ))}

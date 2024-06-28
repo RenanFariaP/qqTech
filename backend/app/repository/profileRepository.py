@@ -3,8 +3,6 @@ from sqlalchemy.exc import IntegrityError
 from app.schemas.profile import create, config
 from app.schemasTest import Profile
 from .. import models
-from fastapi import HTTPException
-
 
 def get_profile(db: Session, profile_id: int):
     return db.query(models.Profile).filter(models.Profile.id == profile_id).first()
@@ -31,7 +29,7 @@ def create_profile_with_modules(db: Session, profile: create.ProfileCreate):
     for module_id in profile.modules:
         module = db.query(models.Module).filter(models.Module.id == module_id).first()
         if module:
-            db_profile.modules.append(module_id)
+            db_profile.modules.append(module)
     db.commit()
     db.refresh(db_profile)
     return db_profile

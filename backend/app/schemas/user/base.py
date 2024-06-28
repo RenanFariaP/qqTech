@@ -8,3 +8,7 @@ class UserBase(BaseModel):
     registration: str
     password: str
     profile_id: Optional[int] = None
+    
+    class Config:
+        orm_mode = True
+        from_attributes = True

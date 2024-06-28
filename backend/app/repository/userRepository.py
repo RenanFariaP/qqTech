@@ -10,14 +10,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
-#Rever -----------------------------
-def get_user_by_filter(db: Session, **filters):
-    query = db.query(models.User)
-    for field, value in filters.items():
-        if hasattr(models.User, field):
-            query = query.filter(getattr(models.User, field) == value)
-    return query.all()
-
 def get_user_by_name(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -28,7 +20,8 @@ def get_user_by_registration(db: Session, registration: str):
     return db.query(models.User).filter(models.User.registration == registration).first()
 
 def get_users(db: Session, skip:int=0, limit:int=100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+    result = db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
+    return db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)

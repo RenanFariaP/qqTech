@@ -77,17 +77,7 @@ async def post_profile(profile:ProfileCreate, db:Session=Depends(get_db)):
 @app.get("/dashboard/profile/", response_model=List[Profile])
 async def get_profiles(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     profiles = profileRepository.get_profiles(db, skip=skip, limit=limit)
-    response_profiles = []
-    for profile in profiles:
-        profile_dict = {
-            "id": profile.id,
-            "name": profile.name,
-            "description": profile.description,
-            "users": [user.id for user in profile.users],
-            "modules": [module.id for module in profile.modules]
-        }
-        response_profiles.append(profile_dict)
-    return response_profiles
+    return profiles
 
 #Get profile by ID
 @app.get("/dashboard/profile/{profile_id}", response_model=Profile)
@@ -126,9 +116,9 @@ async def post_user(user:UserCreate, db:Session=Depends(get_db)):
     return userRepository.create_user(db=db,user=db_user)
 
 #Get all users
-@app.get("/dashboard/user/", response_model=list[UserWithRelation])
+@app.get("/dashboard/user/", response_model=List[UserWithRelation])
 async def get_users(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
-    users = userRepository.get_users(db,skip=skip,limit=limit)
+    users = userRepository.get_users(db, skip=skip, limit=limit)
     return users
 
 #Get user by ID

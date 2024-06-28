@@ -1,6 +1,6 @@
-from app.schemas.user.base import UserBase
+# from app.schemas.user.base import UserBase
 
-class User(UserBase):
+# class User(UserBase):
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
