@@ -148,7 +148,7 @@ const ModuleManagement = () => {
       const formatted = formatTransactionOptions(data);
       setTransactionOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar as funções cadastradas!");
+      Notify("error", "Não foi possível listar as transações cadastradas!");
     }
   };
 
@@ -186,6 +186,7 @@ const ModuleManagement = () => {
       const form = {
         name: formData.name,
         description: formData.description,
+        TAG: formData.TAG,
         methods: selectedMethods,
         transactions: selectedTransactions,
       };
@@ -196,6 +197,9 @@ const ModuleManagement = () => {
       Notify("success", "Módulo cadastrado com sucesso!");
       formData.name = "";
       formData.description = "";
+      formData.TAG = "";
+      setTransactionSelectedOption(null);
+      setMethodSelectedOption(null);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
@@ -249,6 +253,14 @@ const ModuleManagement = () => {
                 name="description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
+              />
+              <TextInput
+                label="TAG"
+                type="text"
+                name="TAG"
+                isRequired={true}
+                value={formData.TAG}
+                onChange={(e) => handleChange("TAG", e.target.value)}
               />
               <div className="flex flex-col mt-5">
                 <Select

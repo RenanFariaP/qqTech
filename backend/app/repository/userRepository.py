@@ -2,8 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import models
 from passlib.context import CryptContext
-from app.schemas.user import create, config
+from app.schemas.user import create, config, update
 from app.schemasTest import User
+from app.repository import loginRepository
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -33,18 +34,23 @@ def create_user(db: Session, user:create.UserCreate):
     db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, db_user: models.User):
-    try:
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    except IntegrityError as e:
-        db.rollback()
-        print(e)
-        raise ValueError("A unique constraint was violated")
-    except Exception as e:
-        print(e)
-        raise e
+def update_user(db: Session, user_data: update.UpdateUser, user: models.User):
+    if user_data.username is not None:
+        user.username = user_data.username
+    if user_data.email is not None:
+        user.email = user_data.email
+    if user_data.registration is not None:
+        user.registration = user_data.registration
+    if user_data.password is not None:
+        verify_password = loginRepository.verify_password(user_data.password, user.password)
+        if not verify_password:
+            hashed_password = get_password_hash(user_data.password)
+            user.password = hashed_password
+    if user_data.profile_id is not None:
+        user.profile_id = user_data.profile_id
+    db.commit()
+    db.refresh(user)
+    return user
     
 def delete_user(db:Session, user: User):
     db.delete(user)

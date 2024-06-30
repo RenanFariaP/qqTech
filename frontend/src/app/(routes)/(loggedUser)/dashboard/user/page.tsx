@@ -33,6 +33,7 @@ const UserManagement = () => {
   const [profileOptions, setProfileOptions] = useState<SelectOptions<Profile>[]>([]);
   const [userList, setUserList] = useState<ListItem<User>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
+  
 
   const [profileSelectedOption, setProfileSelectedOption] =
     useState<SelectOptions<Profile> | null>(null);
@@ -97,12 +98,11 @@ const UserManagement = () => {
   };
 
   const handleDelete = async (id: number | string) => {
-    console.log(id);
     try {
       await axios.delete(`http://localhost:8000/dashboard/user/${id}`);
-      Notify('success', 'Perfil deletado com sucesso!');
+      Notify('success', 'Usuário deletado com sucesso!');
     } catch (error) {
-      Notify('error', 'Não foi possível deletar o perfil!');
+      Notify('error', 'Não foi possível deletar o Usuário!');
     } finally {
       fetchUserList();
     }
@@ -139,7 +139,6 @@ const UserManagement = () => {
     event.preventDefault();
     if (!profileSelectedOption) return;
     try {
-      console.log(profileSelectedOption);
       const form = {
         username: formData.username,
         email: formData.email,
@@ -256,7 +255,6 @@ const UserManagement = () => {
           <List
             data={userList}
             onFilterChange={onFilterChange}
-            onSeeMore={() => {}}
             onDelete={(value) => handleDelete(value.id)}
             listEntity="o usuário"
           />

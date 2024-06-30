@@ -139,6 +139,7 @@ const ProfileManagement = () => {
       Notify("success", "Perfil cadastrado com sucesso!");
       formData.name = "";
       formData.description = "";
+      setModuleSelectedOption(null);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;

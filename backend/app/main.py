@@ -7,19 +7,17 @@ from typing import List
 from . import models
 from app.schemas.user.loginsch import LoginRequest
 from app.schemas.profile.create import ProfileCreate
-#from app.schemas.profile.config import Profile
+from app.schemas.profile.update import UpdateProfile
 from app.schemasTest import Profile
 from app.schemas.module.create import ModuleCreate
-#from app.schemas.module.config import Module
+from app.schemas.module.update import UpdateModule
 from app.schemasTest import Module
 from app.schemas.method.create import MethodCreate
-#from app.schemas.method.config import Method
 from app.schemasTest import Method
 from app.schemas.transaction.create import TransactionCreate
 from app.schemasTest import Transaction
 from app.schemas.user.create import UserCreate
-from app.schemas.user.update import UserUpdate
-#from app.schemas.user.config import User
+from app.schemas.user.update import UpdateUser
 from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
 
@@ -93,7 +91,15 @@ async def delete_profile(profile_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Perfil não encontrado!")
     return profileRepository.delete_profile(db=db, profile=db_profile)
 
-
+#Update a profile by id
+@app.put('/dashboard/profile/{profile_id}', response_model=Profile)
+async def update_profile(profile_id: int, profile_data: UpdateProfile, db: Session = Depends(get_db)):
+    db_profile = profileRepository.get_profile(db, profile_id)
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail="Perfil não encontrado!")
+    return profileRepository.update_profile(db, profile_data, db_profile)
+    
+    
 #User
 
 #Create an user
@@ -127,23 +133,13 @@ async def get_user_by_id(user_id: int, db:Session=Depends(get_db)):
     db_user = userRepository.get_user(db, user_id=user_id)
     return db_user
 
-#Modify an user
-@app.put("/dashboard/user/{user_id}", response_model=UserUpdate)
-async def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
-    try:
-        db_user = userRepository.get_user(db, user_id)
-        if db_user is None:
-            raise HTTPException(status_code=404, detail="Usuário não encontrado!")
-        db_user.username = user.username
-        db_user.email = user.email
-        db_user.registration = user.registration
-        db_user.password = user.password
-        db_user.profile_id = user.profile_dict
-        return userRepository.update_user(db, db_user)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+#Update an user by id
+@app.put('/dashboard/user/{user_id}', response_model=User)
+async def update_user(user_id: int, user_data: UpdateUser, db: Session = Depends(get_db)):
+    db_user = userRepository.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Perfil não encontrado!")
+    return userRepository.update_user(db, user_data, db_user)
 
 #Delete an user by ID
 @app.delete("/dashboard/user/{user_id}", response_model = dict)
@@ -155,6 +151,7 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 
 #Module
+#Create a module
 @app.post("/dashboard/module/",response_model=Module)
 async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
     db_module_name = moduleRepository.get_module_by_name(db, name=module.name)
@@ -165,22 +162,33 @@ async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
         raise HTTPException(status_code=400, detail="Já existe um módulo com essa TAG!")
     return moduleRepository.create_module_with_methods_and_transactions(db=db,module=module)
 
+#Get all modules
 @app.get("/dashboard/module/", response_model=list[Module])
 async def get_modules(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     modules = moduleRepository.get_modules(db,skip=skip,limit=limit)
     return modules
 
+#Get a module by id
 @app.get("/dashboard/module/{module_id}", response_model=Module)
 async def get_module_by_id(module_id: int, db:Session=Depends(get_db)):
     db_module = moduleRepository.get_module(db, module_id=module_id)
     return db_module
 
+#Delete a module by id
 @app.delete("/dashboard/module/{module_id}", response_model = dict)
 async def delete_module(module_id: int, db: Session = Depends(get_db)):
     db_module = moduleRepository.get_module(db, module_id)
     if db_module is None:
         raise HTTPException(status_code=404, detail="Módulo não encontrado!")
     return moduleRepository.delete_module(db=db, module=db_module)
+
+#Update a module by id
+@app.put('/dashboard/module/{module_id}', response_model=Module)
+async def update_module(module_id: int, module_data: UpdateModule, db: Session = Depends(get_db)):
+    db_module = moduleRepository.get_module(db, module_id)
+    if db_module is None:
+        raise HTTPException(status_code=404, detail="Módulo não encontrado!")
+    return moduleRepository.update_module(db, module_data, db_module)
 
 #Transaction
 #Create a transaction
@@ -194,16 +202,19 @@ async def post_transaction(transaction:TransactionCreate, db:Session=Depends(get
         raise HTTPException(status_code=400, detail="Já existe uma transação com essa TAG!")
     return transactionRepository.create_transaction(db=db,transaction=transaction)
 
+#Get all transactions
 @app.get("/dashboard/transaction/", response_model=list[Transaction])
 async def get_transactions(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     transactions = transactionRepository.get_transactions(db,skip=skip,limit=limit)
     return transactions
 
+#Get a transaction by id
 @app.get("/dashboard/transaction/{transaction_id}", response_model=Transaction)
 async def get_transaction_by_id(transaction_id: int, db:Session=Depends(get_db)):
     db_transaction = transactionRepository.get_transaction(db, transaction_id=transaction_id)
     return db_transaction
 
+#Delete a transaction by id
 @app.delete("/dashboard/transaction/{transaction_id}", response_model = dict)
 async def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
     db_transaction = transactionRepository.get_transaction(db, transaction_id)
@@ -212,6 +223,7 @@ async def delete_transaction(transaction_id: int, db: Session = Depends(get_db))
     return transactionRepository.delete_transaction(db=db, transaction=db_transaction)
 
 #Method
+#Create a method
 @app.post("/dashboard/method/", response_model=Method)
 async def post_method(method:MethodCreate, db:Session=Depends(get_db)):
     db_method_name = methodRepository.get_method_by_name(db, name=method.name)
@@ -222,16 +234,19 @@ async def post_method(method:MethodCreate, db:Session=Depends(get_db)):
         raise HTTPException(status_code=400, detail="Já existe uma função com essa TAG!")
     return methodRepository.create_method(db=db,method=method)
 
+#Get all methods
 @app.get("/dashboard/method/", response_model=list[Method])
 async def get_methods(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     methods = methodRepository.get_methods(db,skip=skip,limit=limit)
     return methods
 
+#Get a method by id
 @app.get("/dashboard/method/{method_id}", response_model=Method)
 async def get_method_by_id(method_id: int, db:Session=Depends(get_db)):
     db_method = methodRepository.get_method(db, method_id=method_id)
     return db_method
 
+#Delete a method by id
 @app.delete("/dashboard/method/{method_id}", response_model = dict)
 async def delete_method(method_id: int, db: Session = Depends(get_db)):
     db_method = methodRepository.get_method(db, method_id)

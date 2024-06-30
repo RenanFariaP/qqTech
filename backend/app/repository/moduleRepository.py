@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 from app.schemas.module import create, config
 from app.schemasTest import Module
 from .. import models
-
-
+from app.schemas.module.update import UpdateModule
+from fastapi import HTTPException
 
 def get_module(db: Session, module_id: int):
     return db.query(models.Module).filter(models.Module.id == module_id).first()
@@ -42,16 +41,37 @@ def delete_module(db:Session, module: Module):
     db.commit()
     return {"message": "Módulo deletado!"}
 
-def add_transaction_to_module(db: Session, module_id: int, transaction_id: int):
-    module = db.query(models.Module).filter(models.Module.id == module_id).first()
-    transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
-    module.transactions.append(transaction)
-    db.commit()
-    return module
+# def add_transaction_to_module(db: Session, module_id: int, transaction_id: int):
+#     module = db.query(models.Module).filter(models.Module.id == module_id).first()
+#     transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
+#     module.transactions.append(transaction)
+#     db.commit()
+#     return module
 
-def add_method_to_module(db: Session, module_id: int, method_id: int):
-    module = db.query(models.Module).filter(models.Module.id == module_id).first()
-    method = db.query(models.Method).filter(models.Method.id == method_id).first()
-    module.methods.append(method)
+# def add_method_to_module(db: Session, module_id: int, method_id: int):
+#     module = db.query(models.Module).filter(models.Module.id == module_id).first()
+#     method = db.query(models.Method).filter(models.Method.id == method_id).first()
+#     module.methods.append(method)
+#     db.commit()
+#     return module
+
+def update_module(db: Session, module_data: UpdateModule, module: models.Module):
+    if module_data.name is not None:
+        module.name = module_data.name
+    if module_data.description is not None:
+        module.description = module_data.description
+    if module_data.TAG is not None:
+        module.TAG = module_data.TAG
+    if module_data.methods is not None:
+        methods = db.query(models.Method).filter(models.Method.id.in_(module_data.methods)).all()
+        if len(methods) != len(module_data.methods):
+            raise HTTPException(status_code=404, detail="Uma ou mais funções não foram encontradas!")
+        module.methods = methods
+    if module_data.transactions is not None:
+        transactions = db.query(models.Transaction).filter(models.Transaction.id.in_(module_data.transactions)).all()
+        if len(transactions) != len(module_data.transactions):
+            raise HTTPException(status_code=404, detail="Uma ou mais transações não foram encontradas!")
+        module.transactions = transactions
     db.commit()
+    db.refresh(module)
     return module

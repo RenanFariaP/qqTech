@@ -1,6 +1,10 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
-class ProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+class UpdateProfile(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+    modules: Optional[List[int]]
+
+    class Config:
+        orm_mode = True

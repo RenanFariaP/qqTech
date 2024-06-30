@@ -3,6 +3,8 @@ import Pagination from "./pagination";
 import SearchInput from "./searchInput";
 import IconButton, { Icon } from "./iconButton";
 import ConfirmModal from "./confirmModal";
+import MoreInfosModal from "./moreInfos";
+import { list } from "postcss";
 
 const itemsPerPage = 7;
 
@@ -21,15 +23,15 @@ interface Props<T> {
   data: ListItem<T>[];
   onFilterChange: (value: string) => void;
   onDelete: (value: T) => void;
-  onSeeMore: (value: string) => void;
   listEntity: string;
 }
 
-const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Props<T>) => {
+const List = <T,>({ data, onFilterChange, listEntity, onDelete }: Props<T>) => {
   const [selectedEntity, setSelectedEntity] = useState<ListItem<T>|null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const handleSearchChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -39,20 +41,30 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
   };
 
   const handleDelete = (item: ListItem<T>) =>{
-    setIsOpen(true);
+    setIsDeleteModalOpen(true);
     setSelectedEntity(item);
+  };
+
+  const handleItemInfos = (item: ListItem<T>) =>{
+    setIsInfoModalOpen(true);
+    setSelectedEntity(item);
+    console.log(item.value);
   }
 
-  const handleModalCancel = () =>{
+  const handleDeleteModalCancel = () =>{
     setSelectedEntity(null);
-    setIsOpen(false);
+    setIsDeleteModalOpen(false);
   }
 
-  const handleModalConfirm = () =>{
-    console.log(selectedEntity)
+  const handleInfosModalCancel = () =>{
+    setSelectedEntity(null);
+    setIsInfoModalOpen(false);
+  }
+
+  const handleDeleteModalConfirm = () =>{
     if(!selectedEntity) return;
     onDelete(selectedEntity.value);
-    setIsOpen(false);
+    setIsDeleteModalOpen(false);
     setSelectedEntity(null);
   }
 
@@ -62,19 +74,12 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
 
   
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  
-  // useEffect(()=>{
-  //   if(currentPage>totalPages){
-  //     setCurrentPage(totalPages);
-  //   } else if(currentPage === 1){
-  //     setCurrentPage(1);
-  //   }
-  // }, [handleDelete]);
 
   const paginatedUsers = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  console.log(isInfoModalOpen)
   return (
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">
@@ -98,7 +103,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
             </div>
             <div className="flex gap-3 items-center">
               <IconButton onClick={()=>handleDelete(data)} icon={Icon.delete} />
-              <IconButton onClick={()=>{}} icon={Icon.more} />
+              <IconButton onClick={()=>handleItemInfos(data)} icon={Icon.more} />
             </div>
           </div>
         ))}
@@ -109,7 +114,8 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, onSeeMore }: Pro
         onPageChange={setCurrentPage}
       />
     </div>
-    <ConfirmModal isOpen={isOpen} text={`Deseja remover ${listEntity} ${selectedEntity? selectedEntity.label : ""}?`} title="Confirmar exclusão" confirmButtonText="Confirmar" onConfirm={handleModalConfirm} onDecline={handleModalCancel}/>
+    <MoreInfosModal isOpen={isInfoModalOpen} data={selectedEntity} dataType={listEntity} onDecline={handleInfosModalCancel} title={`Informações do ${listEntity}`} />
+    <ConfirmModal isOpen={isDeleteModalOpen} text={`Deseja remover ${listEntity} ${selectedEntity? selectedEntity.label : ""}?`} title="Confirmar exclusão" confirmButtonText="Confirmar" onConfirm={handleDeleteModalConfirm} onDecline={handleDeleteModalCancel}/>
     </>
   );
 };
