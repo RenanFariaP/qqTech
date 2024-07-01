@@ -23,7 +23,7 @@ interface Props {
 
 const IconButton = ({onClick, icon}: Props) => {
   return (
-    <button onClick={onClick} className='bg-none'>
+    <button onClick={onClick} className='lg:bg-none w-full flex justify-center'>
         <Image src={iconMap[icon]} width={24} height={24} alt={`Icone de ${icon}`} />
     </button>
   )

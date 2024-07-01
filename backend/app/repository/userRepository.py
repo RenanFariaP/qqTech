@@ -21,11 +21,10 @@ def get_user_by_registration(db: Session, registration: str):
     return db.query(models.User).filter(models.User.registration == registration).first()
 
 def get_users(db: Session, skip:int=0, limit:int=100):
-    return db.query(models.User).join(models.User.profile).offset(skip).limit(limit).all()
+    return db.query(models.User).offset(skip).limit(limit).all()
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
-
 
 def create_user(db: Session, user:create.UserCreate):
     db_user = models.User(username=user.username, email=user.email, registration=user.registration, password=user.password, profile_id=user.profile_id)

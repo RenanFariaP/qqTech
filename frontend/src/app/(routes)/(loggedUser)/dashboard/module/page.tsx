@@ -84,9 +84,6 @@ const ModuleManagement = () => {
     return data.map((module) => {
       const cols: ListColumn<Module>[] = [
         {
-          value: module.name,
-        },
-        {
           value: module.description,
         },
         {
@@ -167,7 +164,6 @@ const ModuleManagement = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
     const selectedMethods: number[] = [];
     if (methodSelectedOption) {
       methodSelectedOption.forEach((method) => {
@@ -213,6 +209,7 @@ const ModuleManagement = () => {
     const filteredModules = modules.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
+        item.tag.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
     setModuleList(formatModules(filteredModules));
@@ -231,7 +228,7 @@ const ModuleManagement = () => {
         {isRegistering ? (
           <>
             <div className="flex gap-16 items-center justify-between">
-              <h1 className="font-bold text-xl">Gerenciamento de módulo</h1>
+              <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de módulo</h1>
               <GenericButton
                 onClick={handleRegister}
                 text="Voltar"
@@ -294,19 +291,19 @@ const ModuleManagement = () => {
         ) : (
           <>
             <div className="flex gap-16 items-center justify-between">
-              <h1 className="font-bold text-xl">Gerenciamento de módulo</h1>
+              <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de módulo</h1>
               <GenericButton
                 onClick={handleRegister}
-                text="Cadastrar novo módulo"
+                text="Novo módulo"
                 icon={Icon.add}
               />
             </div>
             <List
               data={moduleList}
               onFilterChange={onFilterChange}
-              onSeeMore={() => {}}
               onDelete={(value) => handleDelete(value.id)}
               listEntity="o módulo"
+              searchPlaceHolder="módulo (Nome, TAG ou descrição)"
             />
           </>
         )}

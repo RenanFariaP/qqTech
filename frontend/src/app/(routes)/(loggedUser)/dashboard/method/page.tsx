@@ -37,9 +37,6 @@ const FunctionManagement = () => {
     return data.map((method) => {
       const cols: ListColumn<Method>[] = [
         {
-          value: method.name,
-        },
-        {
           value: method.description,
         },
         {
@@ -62,8 +59,9 @@ const FunctionManagement = () => {
   const handleDelete = async(id: number | string) => {
     try {
       const response = await axios.delete(`http://localhost:8000/dashboard/method/${id}`);
+      Notify("success", "Função deletada com sucesso!");
     } catch (error) {
-      console.error("Erro ao deletar a transação:", error);
+      Notify("error", "Não foi possível deletar a função!");
     } finally {
       fetchMethodList();
     }
@@ -110,7 +108,8 @@ const FunctionManagement = () => {
     const filteredMethods = methods.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.description.toLowerCase().includes(value.toLowerCase())
+        item.description.toLowerCase().includes(value.toLowerCase()) ||
+        item.TAG.toLowerCase().includes(value.toLowerCase())
     );
     setMethodList(formatMethods(filteredMethods));
   };
@@ -128,7 +127,7 @@ const FunctionManagement = () => {
       {isRegistering ? (
         <>
         <div className="flex gap-16 items-center justify-between">
-          <h1 className="font-bold text-xl">Gerenciamento de Função</h1>
+          <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de Função</h1>
           <GenericButton
             onClick={handleRegister}
             text="Voltar"
@@ -160,19 +159,19 @@ const FunctionManagement = () => {
       ):(
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de Função</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de Função</h1>
             <GenericButton
               onClick={handleRegister}
-              text="Cadastrar nova função"
+              text="Nova função"
               icon={Icon.add}
             />
           </div>
           <List
           data={methodList}
           onFilterChange={onFilterChange}
-          onSeeMore={() => {}}
           onDelete={(value) => handleDelete(value.id)}
           listEntity="a função"
+          searchPlaceHolder="função (Nome, TAG ou descrição)"
         />
         </>
       )}

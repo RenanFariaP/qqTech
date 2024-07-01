@@ -31,6 +31,7 @@ def create_profile_with_modules(db: Session, profile: create.ProfileCreate):
 
 
 def delete_profile(db:Session, profile: Profile):
+    db.query(models.profiles_modules).filter(models.profiles_modules.c.profile_id == models.Profile.id)
     db.delete(profile)
     db.commit()
     return {"message": "Perfil deletado, verifique os usuários dependentes!"}

@@ -40,8 +40,8 @@ const ConfirmModal = ({
             {text}
           </p>
           <div className="flex gap-5 justify-end m-5">
-            <button className="bg-red-900 px-5 py-2 rounded-md text-white font-bold" onClick={handleCancel}>Cancelar</button>
-            <button className="bg-green-900 px-5 py-2 rounded-md text-white font-bold" onClick={handleConfirm}>{confirmButtonText}</button>
+            <button className="bg-red-500 px-5 py-2 rounded-md text-white font-bold" onClick={handleCancel}>Cancelar</button>
+            <button className="bg-green-500 px-5 py-2 rounded-md text-white font-bold" onClick={handleConfirm}>{confirmButtonText}</button>
           </div>
         </div>
       </div>

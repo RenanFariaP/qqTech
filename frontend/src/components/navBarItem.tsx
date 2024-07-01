@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import React from 'react'
+import { usePathname } from 'next/navigation'
+import React, { useEffect } from 'react'
 
 type Props= {
     children: React.ReactNode,
@@ -7,11 +8,22 @@ type Props= {
     route: string,
 }
 
-const NavBarItem = (props: Props) => {
+const NavBarItem = ({children, text, route}: Props) => {
+  const pathName = usePathname();
+  console.log(pathName);
+  useEffect(()=>{},[pathName])
+  if(pathName === route){
+    return (
+      <Link href={route} className='flex gap-2 p-5 border rounded-md cursor-pointer bg-[#418713] text-white font-bold'>
+          <div className=''>{children}</div>
+          <div className=''>{text}</div>
+      </Link>
+    )
+  }
   return (
-    <Link href={props.route} className='flex gap-2 p-5 border rounded-md cursor-pointer'>
-        <div className=''>{props.children}</div>
-        <div className=''>{props.text}</div>
+    <Link href={route} className='flex gap-2 p-5 border rounded-md cursor-pointer hover:bg-[#fdf361] '>
+        <div className='font-bold'>{children}</div>
+        <div className='font-bold'>{text}</div>
     </Link>
   )
 }

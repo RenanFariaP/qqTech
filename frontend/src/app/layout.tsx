@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
@@ -34,7 +35,11 @@ export default function RootLayout({
         <AuthProvider>
           <Header />
           <main className="flex justify-center items-center h-[calc(100vh-96px)] bg-[#d2d2d2]">
-            {isPublicPage ? <PublicRoute>{children}</PublicRoute> : <PrivateRoute>{children}</PrivateRoute>}
+            {isPublicPage ? (
+              <PublicRoute>{children}</PublicRoute>
+            ) : (
+              <PrivateRoute>{children}</PrivateRoute>
+            )}
           </main>
         </AuthProvider>
       </body>

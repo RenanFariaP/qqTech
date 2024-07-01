@@ -25,6 +25,7 @@ def create_method(db: Session, method:create.MethodCreate):
     return db_method
 
 def delete_method(db:Session, method: Method):
+    db.query(models.modules_methods).filter(models.modules_methods.c.method_id == models.Method.id).delete()
     db.delete(method)
     db.commit()
     return {"message": "Função deletada!"}

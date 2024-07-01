@@ -251,5 +251,5 @@ async def get_method_by_id(method_id: int, db:Session=Depends(get_db)):
 async def delete_method(method_id: int, db: Session = Depends(get_db)):
     db_method = methodRepository.get_method(db, method_id)
     if db_method is None:
-        raise HTTPException(status_code=404, detail="Transação não encontrada!")
+        raise HTTPException(status_code=404, detail="Função não encontrada!")
     return methodRepository.delete_method(db=db, method=db_method)

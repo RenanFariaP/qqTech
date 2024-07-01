@@ -47,7 +47,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=current_time)
     updated_at = Column(DateTime, default=current_time, onupdate=current_time)
-    profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id'));
+    profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id'), nullable=True);
     profile: Mapped["Profile"] = relationship(back_populates="users")
     #profile_id = Column(Integer, ForeignKey('profiles.id'))
     #profile = relationship('Profile', back_populates='users')

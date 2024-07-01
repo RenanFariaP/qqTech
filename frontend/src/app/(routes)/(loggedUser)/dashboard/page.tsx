@@ -1,6 +1,6 @@
 "use client";
 
-import Charts from "@/components/charts";
+import Charts, { Icon } from "@/components/charts";
 import { Method } from "@/types/method";
 import { Module } from "@/types/module";
 import { Profile } from "@/types/profile";
@@ -77,11 +77,11 @@ export default function page() {
   }, []);
   return (
     <div className="p-10 flex flex-wrap gap-5">
-      <Charts title="Usuários cadastrados" value={users} path="user"/>
-      <Charts title="Perfis cadastrados" value={profiles} path="profile"/>
-      <Charts title="Módulos cadastrados" value={modules} path="module"/>
-      <Charts title="Transações cadastradas" value={transactions} path="transaction"/>
-      <Charts title="Funções cadastradas" value={methods} path="method"/>
+      <Charts title="Usuários cadastrados" value={users} path="user" icon={Icon.user}/>
+      <Charts title="Perfis cadastrados" value={profiles} path="profile" icon={Icon.profile}/>
+      <Charts title="Módulos cadastrados" value={modules} path="module" icon={Icon.module}/>
+      <Charts title="Transações cadastradas" value={transactions} path="transaction" icon={Icon.transaction}/>
+      <Charts title="Funções cadastradas" value={methods} path="method" icon={Icon.method}/>
     </div>
   );
 }

@@ -25,6 +25,7 @@ def create_transaction(db: Session, transaction:create.TransactionCreate):
     return db_transaction
 
 def delete_transaction(db:Session, transaction: Transaction):
+    db.query(models.modules_transactions).filter(models.modules_transactions.c.transaction_id == models.Transaction.id).delete()
     db.delete(transaction)
     db.commit()
     return {"message": "Transação deletada!"}

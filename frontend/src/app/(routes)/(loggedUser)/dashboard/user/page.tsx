@@ -67,16 +67,13 @@ const UserManagement = () => {
     return data.map((user) => {
       const cols: ListColumn<UserWithRelation>[] = [
         {
-          value: user.username,
-        },
-        {
           value: user.registration,
         },
         {
           value: user.email,
         },
         {
-          value: user.profile.name,
+          value: user.profile ? user.profile.name : "Usuário sem perfil associado",
         },
       ];
       return {
@@ -87,7 +84,7 @@ const UserManagement = () => {
       };
     });
   };
-
+  
   const handleRegister = () => {
     setIsRegistering(!isRegistering);
     formData.username = "";
@@ -137,14 +134,13 @@ const UserManagement = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!profileSelectedOption) return;
     try {
       const form = {
         username: formData.username,
         email: formData.email,
         registration: formData.registration,
         password: formData.password,
-        profile_id: profileSelectedOption.value.id,
+        profile_id: profileSelectedOption?.value.id,
       };
       const response = await axios.post(
         "http://localhost:8000/dashboard/user",
@@ -170,13 +166,14 @@ const UserManagement = () => {
       (item) =>
         item.username.toLowerCase().includes(value.toLowerCase()) ||
         item.registration.toLowerCase().includes(value.toLowerCase()) ||
-        item.profile.name.toLowerCase().includes(value.toLowerCase())
+        item.profile?.name.toLowerCase().includes(value.toLowerCase())
     );
     setUserList(formatUsers(filteredUsers));
   };
   useEffect(() => {
     fetchUserList();
     fetchProfileList();
+    console.log
   }, []);
 
   const animatedComponents = makeAnimated();
@@ -186,7 +183,7 @@ const UserManagement = () => {
       {isRegistering ? (
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de usuário</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de usuário</h1>
             <GenericButton
               onClick={handleRegister}
               text="Voltar"
@@ -245,10 +242,10 @@ const UserManagement = () => {
       ) : (
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de usuário</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de usuário</h1>
             <GenericButton
               onClick={handleRegister}
-              text="Cadastrar novo usuário"
+              text="Novo usuário"
               icon={Icon.add}
             />
           </div>
@@ -257,6 +254,7 @@ const UserManagement = () => {
             onFilterChange={onFilterChange}
             onDelete={(value) => handleDelete(value.id)}
             listEntity="o usuário"
+            searchPlaceHolder= "usuário (Nome, email ou nome de perfil)"
           />
         </>
       )}

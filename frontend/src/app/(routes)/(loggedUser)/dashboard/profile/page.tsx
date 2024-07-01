@@ -56,9 +56,6 @@ const ProfileManagement = () => {
     return data.map((profile) => {
       const cols: ListColumn<Profile>[] = [
         {
-          value: profile.name,
-        },
-        {
           value: profile.description,
         },
       ];
@@ -121,11 +118,12 @@ const ProfileManagement = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if(!moduleSelectedOption)return;
     const selectedModules: number[] = [];
-    moduleSelectedOption.forEach(module => {
-      selectedModules.push(module.value.id)
-    });
+    if(moduleSelectedOption){
+      moduleSelectedOption.forEach(module => {
+        selectedModules.push(module.value.id)
+      });
+    };
     try {
       const form = {
         name: formData.name,
@@ -170,7 +168,7 @@ const ProfileManagement = () => {
       {isRegistering ? (
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de perfil</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de perfil</h1>
             <GenericButton
               onClick={handleRegister}
               text="Voltar"
@@ -212,19 +210,19 @@ const ProfileManagement = () => {
       ) : (
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de perfil</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de perfil</h1>
             <GenericButton
               onClick={handleRegister}
-              text="Cadastrar novo perfil"
+              text="Novo perfil"
               icon={Icon.add}
             />
           </div>
           <List
             data={profileList}
             onFilterChange={onFilterChange}
-            onSeeMore={() => {}}
             onDelete={(value) => handleDelete(value.id)}
             listEntity="o perfil"
+            searchPlaceHolder="perfil (Nome ou descrição)"
           />
         </>
       )}

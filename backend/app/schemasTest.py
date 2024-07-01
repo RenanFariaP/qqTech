@@ -66,7 +66,7 @@ class User(BaseModel):
     password: str
     created_at: datetime
     updated_at: datetime
-    profile: ProfileUserResponse
+    profile: Optional[ProfileUserResponse]
 
     class Config:
         orm_mode = True

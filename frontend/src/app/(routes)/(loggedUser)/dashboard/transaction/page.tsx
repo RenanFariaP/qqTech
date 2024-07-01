@@ -39,9 +39,6 @@ const TransactionManagement = () => {
     return data.map((transaction) => {
       const cols: ListColumn<Transaction>[] = [
         {
-          value: transaction.name,
-        },
-        {
           value: transaction.description,
         },
         {
@@ -77,8 +74,9 @@ const TransactionManagement = () => {
   const handleDelete = async(id: number | string) => {
     try {
       const response = await axios.delete(`http://localhost:8000/dashboard/transaction/${id}`);
+      Notify("success", "Transação deletada com sucesso!");
     } catch (error) {
-      console.error("Erro ao deletar a transação:", error);
+      Notify("error", "Não foi possível deletar a transação!");
     } finally {
       fetchTransactionList();
     }
@@ -112,7 +110,8 @@ const TransactionManagement = () => {
     const filteredTransactions = transactions.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.description.toLowerCase().includes(value.toLowerCase())
+        item.description.toLowerCase().includes(value.toLowerCase()) ||
+        item.TAG.toLowerCase().includes(value.toLowerCase())
     );
     setTransactionList(formatTransactions(filteredTransactions));
   };
@@ -127,7 +126,7 @@ const TransactionManagement = () => {
       {isRegistering ? (
         <>
         <div className="flex gap-16 items-center justify-between">
-          <h1 className="font-bold text-xl">Gerenciamento de Transação</h1>
+          <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de Transação</h1>
           <GenericButton
             onClick={handleRegister}
             text="Voltar"
@@ -159,19 +158,19 @@ const TransactionManagement = () => {
       ):(
         <>
           <div className="flex gap-16 items-center justify-between">
-            <h1 className="font-bold text-xl">Gerenciamento de Transação</h1>
+            <h1 className="font-bold lg:text-xl text-lg">Gerenciamento de Transação</h1>
             <GenericButton
               onClick={handleRegister}
-              text="Cadastrar nova transação"
+              text="Nova transação"
               icon={Icon.add}
             />
           </div>
           <List
           data={transactionList}
           onFilterChange={onFilterChange}
-          onSeeMore={() => {}}
           onDelete={(value) => handleDelete(value.id)}
-          listEntity="a função"
+          listEntity="a transação"
+          searchPlaceHolder="transação (Nome, TAG ou descrição)"
         />
         </>
       )}

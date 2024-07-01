@@ -4,7 +4,6 @@ import SearchInput from "./searchInput";
 import IconButton, { Icon } from "./iconButton";
 import ConfirmModal from "./confirmModal";
 import MoreInfosModal from "./moreInfos";
-import { list } from "postcss";
 
 const itemsPerPage = 7;
 
@@ -24,10 +23,13 @@ interface Props<T> {
   onFilterChange: (value: string) => void;
   onDelete: (value: T) => void;
   listEntity: string;
+  searchPlaceHolder: string;
 }
 
-const List = <T,>({ data, onFilterChange, listEntity, onDelete }: Props<T>) => {
-  const [selectedEntity, setSelectedEntity] = useState<ListItem<T>|null>(null);
+const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolder }: Props<T>) => {
+  const [selectedEntity, setSelectedEntity] = useState<ListItem<T> | null>(
+    null
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -40,82 +42,131 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete }: Props<T>) => {
     setCurrentPage(1);
   };
 
-  const handleDelete = (item: ListItem<T>) =>{
+  const handleDelete = (item: ListItem<T>) => {
     setIsDeleteModalOpen(true);
     setSelectedEntity(item);
   };
 
-  const handleItemInfos = (item: ListItem<T>) =>{
+  const handleItemInfos = (item: ListItem<T>) => {
     setIsInfoModalOpen(true);
     setSelectedEntity(item);
     console.log(item.value);
-  }
+  };
 
-  const handleDeleteModalCancel = () =>{
+  const handleDeleteModalCancel = () => {
     setSelectedEntity(null);
     setIsDeleteModalOpen(false);
-  }
+  };
 
-  const handleInfosModalCancel = () =>{
+  const handleInfosModalCancel = () => {
     setSelectedEntity(null);
     setIsInfoModalOpen(false);
-  }
+  };
 
-  const handleDeleteModalConfirm = () =>{
-    if(!selectedEntity) return;
+  const handleDeleteModalConfirm = () => {
+    if (!selectedEntity) return;
     onDelete(selectedEntity.value);
     setIsDeleteModalOpen(false);
     setSelectedEntity(null);
-  }
+  };
 
   useEffect(() => {
     onFilterChange(searchQuery);
   }, [searchQuery]);
 
-  
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  const paginatedUsers = data.slice(
+  const paginatedEntity = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  console.log(isInfoModalOpen)
+  console.log('response',data);
   return (
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">
-      <SearchInput
-        placeholder={`Nome d${listEntity}`}
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
-      <div className="flex flex-col gap-4 flex-1">
-        {paginatedUsers.map((data) => (
-          <div
-            key={data.uniqueIdentifier}
-            className="flex justify-between bg-[#418713] rounded-md text-white font-semibold p-5"
-          >
-            <div className="flex items-center">
-              {data.cols.map((column, index) => (
-                <p className="mx-2 text-start text-wrap min-w-80" key={column.value+index}>
-                  {column.value}
-                </p>
-              ))}
+        <SearchInput
+          placeholder={`Buscar ${searchPlaceHolder}`}
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <div className="lg:flex flex-col gap-4 flex-1">
+          {paginatedEntity.map((data) => (
+            <div key={data.uniqueIdentifier}>
+              <div
+                className="lg:hidden flex flex-col items-center bg-[#418713] rounded-md mb-5 w-auto p-4 text-white"
+              >
+                <div className="text-center [border-bottom:1px_solid_#FFF] w-full font-bold">
+                  {data.label}
+                </div>
+                <div className="flex flex-col items-center py-2">
+                  {data.cols.map((column, index) => (
+                    <p
+                      className="mx-2 text-center text-wrap min-w-80"
+                      key={column.value + index}
+                    >
+                      {column.value}
+                    </p>
+                  ))}
+                </div>
+                <div className="flex gap-3 items-center justify-between w-full [border-top:1px_solid_#FFF] pt-2">
+                  <div className="bg-red-700 w-full flex justify-center items-center py-1 rounded-md">
+                    <IconButton
+                      onClick={() => handleDelete(data)}
+                      icon={Icon.delete}
+                    />
+                  </div>
+                  <div className="bg-green-500 w-full text-center flex justify-center items-center py-1 rounded-md">
+                    <IconButton
+                      onClick={() => handleItemInfos(data)}
+                      icon={Icon.more}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                className="hidden lg:flex justify-between bg-[#418713] rounded-md text-white font-semibold p-5"
+              >
+                <div className="flex items-center">
+                  <p className="w-32">{data.label}</p>
+                  {data.cols.map((column, index) => (
+                    <p
+                      className="mx-2 text-start text-wrap min-w-80"
+                      key={column.value + index}
+                    >
+                      {column.value}
+                    </p>
+                  ))}
+                </div>
+                <div className="flex gap-3 items-center">
+                  <IconButton
+                    onClick={() => handleDelete(data)}
+                    icon={Icon.delete}
+                  />
+                  <IconButton
+                    onClick={() => handleItemInfos(data)}
+                    icon={Icon.more}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex gap-3 items-center">
-              <IconButton onClick={()=>handleDelete(data)} icon={Icon.delete} />
-              <IconButton onClick={()=>handleItemInfos(data)} icon={Icon.more} />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        text={`Deseja remover ${listEntity} ${
+          selectedEntity ? selectedEntity.label : ""
+        }?`}
+        title="Confirmar exclusão"
+        confirmButtonText="Confirmar"
+        onConfirm={handleDeleteModalConfirm}
+        onDecline={handleDeleteModalCancel}
       />
-    </div>
-    <MoreInfosModal isOpen={isInfoModalOpen} data={selectedEntity} dataType={listEntity} onDecline={handleInfosModalCancel} title={`Informações do ${listEntity}`} />
-    <ConfirmModal isOpen={isDeleteModalOpen} text={`Deseja remover ${listEntity} ${selectedEntity? selectedEntity.label : ""}?`} title="Confirmar exclusão" confirmButtonText="Confirmar" onConfirm={handleDeleteModalConfirm} onDecline={handleDeleteModalCancel}/>
     </>
   );
 };

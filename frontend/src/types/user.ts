@@ -10,5 +10,5 @@ export interface User {
   }
   
 export interface UserWithRelation extends User{
-  profile: Profile
+  profile: Profile | null;
 }

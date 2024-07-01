@@ -37,6 +37,9 @@ def create_module_with_methods_and_transactions(module: create.ModuleCreate, db:
     return db_module
 
 def delete_module(db:Session, module: Module):
+    db.query(models.profiles_modules).filter(models.profiles_modules.c.module_id == models.Module.id).delete()
+    db.query(models.modules_transactions).filter(models.modules_transactions.c.module_id == models.Module.id).delete()
+    db.query(models.modules_methods).filter(models.modules_methods.c.module_id == models.Module.id).delete()
     db.delete(module)
     db.commit()
     return {"message": "Módulo deletado!"}
