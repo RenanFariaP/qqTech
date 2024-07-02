@@ -31,8 +31,9 @@ interface SelectOptions<T> {
 const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRelation[]>([]);
   const [profileOptions, setProfileOptions] = useState<SelectOptions<Profile>[]>([]);
-  const [userList, setUserList] = useState<ListItem<User>[]>([]);
+  const [userList, setUserList] = useState<ListItem<UserWithRelation>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserWithRelation | null>(null);
   
 
   const [profileSelectedOption, setProfileSelectedOption] =
@@ -84,7 +85,9 @@ const UserManagement = () => {
       };
     });
   };
-  
+
+  const userDismembered = (data:UserWithRelation) =>{}
+
   const handleRegister = () => {
     setIsRegistering(!isRegistering);
     formData.username = "";
@@ -94,16 +97,20 @@ const UserManagement = () => {
     setProfileSelectedOption(null);
   };
 
-  const handleDelete = async (id: number | string) => {
+  const handleDelete = async (id: number) => {
     try {
       await axios.delete(`http://localhost:8000/dashboard/user/${id}`);
       Notify('success', 'Usuário deletado com sucesso!');
     } catch (error) {
-      Notify('error', 'Não foi possível deletar o Usuário!');
+      Notify('error', 'Não foi possível deletar o usuário!');
     } finally {
       fetchUserList();
     }
   };
+
+  const handleGetUser = async (item: User)=>{
+    console.log(item);
+  }
 
   const fetchUserList = async () => {
     try {
@@ -173,7 +180,6 @@ const UserManagement = () => {
   useEffect(() => {
     fetchUserList();
     fetchProfileList();
-    console.log
   }, []);
 
   const animatedComponents = makeAnimated();
@@ -253,6 +259,7 @@ const UserManagement = () => {
             data={userList}
             onFilterChange={onFilterChange}
             onDelete={(value) => handleDelete(value.id)}
+            onDetail={(value) => {}}
             listEntity="o usuário"
             searchPlaceHolder= "usuário (Nome, email ou nome de perfil)"
           />

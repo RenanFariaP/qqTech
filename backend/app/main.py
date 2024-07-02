@@ -20,12 +20,15 @@ from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UpdateUser
 from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
-
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
+
+# oauth_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
 app = FastAPI()
 origins = [
@@ -42,6 +45,7 @@ app.add_middleware(
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 def get_db():
     db = SessionLocal()
     try : 
@@ -49,6 +53,8 @@ def get_db():
     finally:
         db.close()
         
+# def token_verifier(db: Session = Depends(get_db), token=Depends(oauth_scheme)):
+#     loginRepository.verify_token(db, access_token=token)
         
 #Login authentication
 @app.post('/login')
@@ -60,7 +66,13 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
         access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
         return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
     raise HTTPException(status_code=400, detail="Email ou senha inválido!")
+# async def login(request: OAuth2PasswordRequestForm = Depends(), db:Session=Depends(get_db)):
+#     login_form = LoginRequest(email = request.username, password=request.password)
+#     return loginRepository.user_login(loginRequest=login_form, db=db)
 
+# @app.get('/user_verify')
+# def user_verify(token_verify = Depends(token_verifier)):
+#     return "Usuário verificado!"
 
 #Profile
 #Create a profile
@@ -128,7 +140,7 @@ async def get_users(skip:int=0, limit:int=100, db:Session=Depends(get_db)):
     return users
 
 #Get user by ID
-@app.get("/dashboard/user/{user_id}", response_model=User)
+@app.get("/dashboard/user/{user_id}", response_model=UserWithRelation)
 async def get_user_by_id(user_id: int, db:Session=Depends(get_db)):
     db_user = userRepository.get_user(db, user_id=user_id)
     return db_user

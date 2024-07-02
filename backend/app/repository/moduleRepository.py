@@ -6,7 +6,10 @@ from app.schemas.module.update import UpdateModule
 from fastapi import HTTPException
 
 def get_module(db: Session, module_id: int):
-    return db.query(models.Module).filter(models.Module.id == module_id).first()
+    db_module = db.query(models.Module).filter(models.Module.id == module_id).first()
+    if db_module is None:
+        raise HTTPException(status_code=404, detail="Módulo não encontrado!")
+    return db_module
 
 def get_module_by_name(db: Session, name: str):
     return db.query(models.Module).filter(models.Module.name == name).first()

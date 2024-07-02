@@ -1,30 +1,11 @@
+import { ModuleInfos } from "./moduleInfos";
+import { ProfileInfos } from "./profileInfos";
+
 export interface UserInfos {
     id: number;
     username: string;
     email: string;
     registration: string;
     password: string;
-    profile: {
-      id: number;
-      name: string;
-      description: string;
-      modules: {
-        id: number;
-        name: string;
-        description: string;
-        TAG: string;
-        methods: {
-          id: number;
-          name: string;
-          description: string;
-          TAG: string;
-        };
-        transactions: {
-          id: number;
-          name: string;
-          description: string;
-          TAG: string;
-        };
-      };
+    profile: ProfileInfos | null;
     };
-  };

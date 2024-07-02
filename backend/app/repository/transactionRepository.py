@@ -3,10 +3,14 @@ from sqlalchemy.exc import IntegrityError
 from app.schemas.transaction import create, config
 from app.schemasTest import Transaction
 from .. import models
+from fastapi import HTTPException
 
 
 def get_transaction(db: Session, transaction_id: int):
-    return db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
+    db_transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
+    if db_transaction is None:
+        raise HTTPException(status_code=404, detail="Transação não encontrada!")
+    return db_transaction
 
 def get_transaction_by_name(db: Session, name: str):
     return db.query(models.Transaction).filter(models.Transaction.name == name).first()

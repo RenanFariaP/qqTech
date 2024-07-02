@@ -22,6 +22,7 @@ interface Props<T> {
   data: ListItem<T>[];
   onFilterChange: (value: string) => void;
   onDelete: (value: T) => void;
+  onDetail: (value: T) => void;
   listEntity: string;
   searchPlaceHolder: string;
 }
@@ -43,14 +44,15 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
   };
 
   const handleDelete = (item: ListItem<T>) => {
+    console.log(item)
     setIsDeleteModalOpen(true);
     setSelectedEntity(item);
   };
 
   const handleItemInfos = (item: ListItem<T>) => {
     setIsInfoModalOpen(true);
-    setSelectedEntity(item);
-    console.log(item.value);
+    setSelectedEntity(item)
+    console.log(item);
   };
 
   const handleDeleteModalCancel = () => {
@@ -80,7 +82,6 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  console.log('response',data);
   return (
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">

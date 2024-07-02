@@ -1,15 +1,18 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 from .. import models
 from passlib.context import CryptContext
 from app.schemas.user import create, config, update
 from app.schemasTest import User
 from app.repository import loginRepository
+from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado!")
+    return db_user
 
 def get_user_by_name(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()

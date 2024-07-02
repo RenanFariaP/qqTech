@@ -4,7 +4,6 @@ export interface User {
     id: number;
     username: string;
     registration: string;
-    profile_id: number;
     email: string;
     password: string;
   }

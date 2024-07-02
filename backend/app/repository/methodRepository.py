@@ -3,10 +3,14 @@ from sqlalchemy.exc import IntegrityError
 from app.schemas.method import create, config
 from app.schemasTest import Method
 from .. import models
+from fastapi import HTTPException
 
 
 def get_method(db: Session, method_id: int):
-    return db.query(models.Method).filter(models.Method.id == method_id).first()
+    db_method = db.query(models.Method).filter(models.Method.id == method_id).first()
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Função não encontrada!")
+    return db_method
 
 def get_method_by_name(db: Session, name: str):
     return db.query(models.Method).filter(models.Method.name == name).first()

@@ -7,7 +7,10 @@ from .. import models
 from fastapi import HTTPException
 
 def get_profile(db: Session, profile_id: int):
-    return db.query(models.Profile).filter(models.Profile.id == profile_id).first()
+    db_profile = db.query(models.Profile).filter(models.Profile.id == profile_id).first()
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail="Perfil não encontrado!")
+    return db_profile
 
 def get_profile_by_name(db: Session, name: str):
     return db.query(models.Profile).filter(models.Profile.name == name).first()
