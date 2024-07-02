@@ -40,6 +40,10 @@ def delete_profile(db:Session, profile: Profile):
     return {"message": "Perfil deletado, verifique os usuários dependentes!"}
 
 def update_profile(db: Session, profile_data: UpdateProfile, profile: models.Profile):
+    db_profile_name = get_profile_by_name(db, profile_data.name);
+    if db_profile_name:
+        if db_profile_name.id != profile.id:
+            raise HTTPException(status_code=409, detail="O nome já está associado a outro perfil!")
     if profile_data.name is not None:
         profile.name = profile_data.name
     if profile_data.description is not None:

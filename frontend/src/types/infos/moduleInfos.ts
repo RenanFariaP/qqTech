@@ -1,5 +1,5 @@
-import { MethodInfos } from "./methodInfo";
-import { TransactionInfos } from "./transactionInfo";
+import { MethodInfos } from "./methodInfos";
+import { TransactionInfos } from "./transactionInfos";
 
 export interface ModuleInfos {
         id: number;

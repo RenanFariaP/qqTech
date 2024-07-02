@@ -10,6 +10,7 @@ type Input = {
   name: string;
   isRequired: boolean;
   value: string;
+  placeholder?: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   bgColor?: string;
 };
@@ -24,6 +25,7 @@ const TextInput = ({
   name,
   isRequired,
   value,
+  placeholder="",
   onChange,
   bgColor = "white",
 }: Input) => {
@@ -56,6 +58,7 @@ const TextInput = ({
             required={isRequired}
             className={`rounded-md w-80 h-10 outline-none p-5 bg-${bgColor}`}
             value={value}
+            placeholder={placeholder}
             onChange={onChange}
           /> 
           <Image onClick={handleChange} className="ml-[-42px] cursor-pointer" src={iconMap.reveal} alt="Exibir senha" />

@@ -1,4 +1,4 @@
-import { Profile } from "./profile";
+import { ProfileInfos } from "./infos/profileInfos";
 
 export interface User {
     id: number;
@@ -6,8 +6,9 @@ export interface User {
     registration: string;
     email: string;
     password: string;
+    profile_id: number;
   }
   
 export interface UserWithRelation extends User{
-  profile: Profile | null;
+  profile: ProfileInfos | null;
 }

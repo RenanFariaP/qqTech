@@ -13,8 +13,10 @@ from app.schemas.module.create import ModuleCreate
 from app.schemas.module.update import UpdateModule
 from app.schemasTest import Module
 from app.schemas.method.create import MethodCreate
+from app.schemas.method.update import UpdateMethod
 from app.schemasTest import Method
 from app.schemas.transaction.create import TransactionCreate
+from app.schemas.transaction.update import UpdateTransaction
 from app.schemasTest import Transaction
 from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UpdateUser
@@ -66,6 +68,7 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
         access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
         return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
     raise HTTPException(status_code=400, detail="Email ou senha inválido!")
+
 # async def login(request: OAuth2PasswordRequestForm = Depends(), db:Session=Depends(get_db)):
 #     login_form = LoginRequest(email = request.username, password=request.password)
 #     return loginRepository.user_login(loginRequest=login_form, db=db)
@@ -80,7 +83,7 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
 async def post_profile(profile:ProfileCreate, db:Session=Depends(get_db)):
     db_profile = profileRepository.get_profile_by_name(db, name=profile.name)
     if db_profile:
-        raise HTTPException(status_code=400, detail="Perfil já cadastrado!")
+        raise HTTPException(status_code=409, detail="Já existe um perfil com esse nome!")
     return profileRepository.create_profile_with_modules(db=db,profile=profile)
 
 #Get all profiles
@@ -111,7 +114,6 @@ async def update_profile(profile_id: int, profile_data: UpdateProfile, db: Sessi
         raise HTTPException(status_code=404, detail="Perfil não encontrado!")
     return profileRepository.update_profile(db, profile_data, db_profile)
     
-    
 #User
 
 #Create an user
@@ -119,10 +121,10 @@ async def update_profile(profile_id: int, profile_data: UpdateProfile, db: Sessi
 async def post_user(user:UserCreate, db:Session=Depends(get_db)):
     db_user_email = userRepository.get_user_by_email(db, email=user.email)
     if db_user_email:
-        raise HTTPException(status_code=400, detail="O email já está vinculado a outro usuário!")
+        raise HTTPException(status_code=409, detail="O email já está vinculado a outro usuário!")
     db_user_registration = userRepository.get_user_by_registration(db, registration=user.registration)
     if db_user_registration:
-        raise HTTPException(status_code=400, detail="A matrícula já está vinculada a outro usuário!")
+        raise HTTPException(status_code=409, detail="A matrícula já está vinculada a outro usuário!")
     hashed_password = userRepository.get_password_hash(user.password)
     db_user = UserCreate(
         username = user.username,
@@ -150,7 +152,7 @@ async def get_user_by_id(user_id: int, db:Session=Depends(get_db)):
 async def update_user(user_id: int, user_data: UpdateUser, db: Session = Depends(get_db)):
     db_user = userRepository.get_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="Perfil não encontrado!")
+        raise HTTPException(status_code=404, detail="Usuário não encontrado!")
     return userRepository.update_user(db, user_data, db_user)
 
 #Delete an user by ID
@@ -168,11 +170,12 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 async def post_module(module:ModuleCreate, db:Session=Depends(get_db)):
     db_module_name = moduleRepository.get_module_by_name(db, name=module.name)
     if db_module_name:
-        raise HTTPException(status_code=400, detail="Já existe um módulo com esse nome!")
+        raise HTTPException(status_code=409, detail="Já existe um módulo com esse nome!")
     db_module_TAG = moduleRepository.get_module_by_TAG(db, TAG=module.TAG)
     if db_module_TAG:
-        raise HTTPException(status_code=400, detail="Já existe um módulo com essa TAG!")
+        raise HTTPException(status_code=409, detail="Já existe um módulo com essa TAG!")
     return moduleRepository.create_module_with_methods_and_transactions(db=db,module=module)
+
 
 #Get all modules
 @app.get("/dashboard/module/", response_model=list[Module])
@@ -208,10 +211,10 @@ async def update_module(module_id: int, module_data: UpdateModule, db: Session =
 async def post_transaction(transaction:TransactionCreate, db:Session=Depends(get_db)):
     db_transaction_name = transactionRepository.get_transaction_by_name(db, name=transaction.name)
     if db_transaction_name:
-        raise HTTPException(status_code=400, detail="Já existe uma transação com esse nome!")
+        raise HTTPException(status_code=409, detail="Já existe uma transação com esse nome!")
     db_transaction_TAG = transactionRepository.get_transaction_by_TAG(db, TAG=transaction.TAG)
     if db_transaction_TAG:
-        raise HTTPException(status_code=400, detail="Já existe uma transação com essa TAG!")
+        raise HTTPException(status_code=409, detail="Já existe uma transação com essa TAG!")
     return transactionRepository.create_transaction(db=db,transaction=transaction)
 
 #Get all transactions
@@ -233,6 +236,14 @@ async def delete_transaction(transaction_id: int, db: Session = Depends(get_db))
     if db_transaction is None:
         raise HTTPException(status_code=404, detail="Transação não encontrada!")
     return transactionRepository.delete_transaction(db=db, transaction=db_transaction)
+
+#Update an transaction by id
+@app.put('/dashboard/transaction/{transaction_id}', response_model=Transaction)
+async def update_transaction(transaction_id: int, transaction_data: UpdateTransaction, db: Session = Depends(get_db)):
+    db_transaction = transactionRepository.get_transaction(db, transaction_id)
+    if db_transaction is None:
+        raise HTTPException(status_code=404, detail="Transação não encontrado!")
+    return transactionRepository.update_transaction(db, transaction_data, db_transaction)
 
 #Method
 #Create a method
@@ -265,3 +276,11 @@ async def delete_method(method_id: int, db: Session = Depends(get_db)):
     if db_method is None:
         raise HTTPException(status_code=404, detail="Função não encontrada!")
     return methodRepository.delete_method(db=db, method=db_method)
+
+#Update an method by id
+@app.put('/dashboard/method/{method_id}', response_model=Method)
+async def update_method(method_id: int, method_data: UpdateMethod, db: Session = Depends(get_db)):
+    db_method = methodRepository.get_method(db, method_id)
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Função não encontrado!")
+    return methodRepository.update_method(db, method_data, db_method)

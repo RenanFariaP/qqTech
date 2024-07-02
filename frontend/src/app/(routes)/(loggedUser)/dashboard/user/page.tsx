@@ -3,7 +3,7 @@
 import List, { ListColumn, ListItem } from "@/components/list";
 import { Icon } from "@/components/genericButton";
 import React, { FormEvent, useEffect, useState } from "react";
-import { User, UserWithRelation } from "@/types/user";
+import { UserWithRelation } from "@/types/user";
 import TextInput from "@/components/textInput";
 import ButtonInput from "@/components/buttonInput";
 import GenericButton from "@/components/genericButton";
@@ -86,8 +86,6 @@ const UserManagement = () => {
     });
   };
 
-  const userDismembered = (data:UserWithRelation) =>{}
-
   const handleRegister = () => {
     setIsRegistering(!isRegistering);
     formData.username = "";
@@ -108,7 +106,7 @@ const UserManagement = () => {
     }
   };
 
-  const handleGetUser = async (item: User)=>{
+  const handleGetUser = async (item: UserWithRelation)=>{
     console.log(item);
   }
 
@@ -259,9 +257,9 @@ const UserManagement = () => {
             data={userList}
             onFilterChange={onFilterChange}
             onDelete={(value) => handleDelete(value.id)}
-            onDetail={(value) => {}}
             listEntity="o usuário"
             searchPlaceHolder= "usuário (Nome, email ou nome de perfil)"
+            entityType="user"
           />
         </>
       )}

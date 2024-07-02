@@ -172,6 +172,7 @@ const FunctionManagement = () => {
           onDelete={(value) => handleDelete(value.id)}
           listEntity="a função"
           searchPlaceHolder="função (Nome, TAG ou descrição)"
+          entityType="method"
         />
         </>
       )}

@@ -171,6 +171,7 @@ const TransactionManagement = () => {
           onDelete={(value) => handleDelete(value.id)}
           listEntity="a transação"
           searchPlaceHolder="transação (Nome, TAG ou descrição)"
+          entityType="transaction"
         />
         </>
       )}

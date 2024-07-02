@@ -25,8 +25,8 @@ const AuthContext = createContext({
   login: async (email: string, password: string) => {},
   logout: () => {},
   user: { email: "", token: "", username: "" },
-  openMenu : () => {},
-  isOpenMenu: false
+  menuOpen : () => {},
+  isMenuOpen: false
 });
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -36,7 +36,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     username: "",
   });
   const [loading, setLoading] = useState(true);
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [isMenuOpen, setIsOpenMenu] = useState(false);
   const router = useRouter();
 
   
@@ -87,12 +87,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.replace("/login");
   };
 
-  const openMenu = () =>{
-    setIsOpenMenu(!isOpenMenu);
+  const menuOpen = () =>{
+    setIsOpenMenu(!isMenuOpen);
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, openMenu, isOpenMenu}}>
+    <AuthContext.Provider value={{ user, loading, login, logout, menuOpen, isMenuOpen}}>
       {children}
     </AuthContext.Provider>
   );

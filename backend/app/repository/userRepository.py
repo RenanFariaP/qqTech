@@ -37,6 +37,14 @@ def create_user(db: Session, user:create.UserCreate):
     return db_user
 
 def update_user(db: Session, user_data: update.UpdateUser, user: models.User):
+    db_user_email = db.query(models.User).filter(models.User.email == user_data.email).first()
+    db_user_registration = get_user_by_registration(db, registration=user_data.registration)
+    if db_user_email:
+        if db_user_email.id != user.id:
+            raise HTTPException(status_code=409, detail="O email já está associado a outro usuário!")
+    if db_user_registration:
+        if db_user_registration.id != user.id:
+            raise HTTPException(status_code=409, detail="A matrícula já está associada a outro usuário!")
     if user_data.username is not None:
         user.username = user_data.username
     if user_data.email is not None:

@@ -9,16 +9,16 @@ import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 function Dashboard({ children }: { children: React.ReactNode }) {
-  const { user, logout, isOpenMenu, openMenu } = useAuth();
+  const { user, logout, isMenuOpen, menuOpen } = useAuth();
   const path = usePathname();
 
   useEffect(() => {
-    openMenu();
+    menuOpen();
   }, [path]);
 
   return (
     <section className="flex w-full h-full lg:static relative">
-      {isOpenMenu ? (
+      {isMenuOpen ? (
         <div className="w-[430px] bg-white h-full flex lg:static absolute left-0 flex-col gap-5 justify-between shadow-md p-2 [transition:0.5s_cubic-bezier(0.075,0.82,0.165,1)]">
           <div className="flex flex-col gap-5">
             <NavBarItem route="/dashboard" text="Dashboard administrativo">

@@ -1,34 +1,20 @@
-import { MethodInfos } from "@/types/infos/methodInfo";
-import { ModuleInfos } from "@/types/infos/moduleInfos";
-import { ProfileInfos } from "@/types/infos/profileInfos";
-import { TransactionInfos } from "@/types/infos/transactionInfo";
-import { UserInfos } from "@/types/infos/userInfos";
 import React, { useEffect, useState } from "react";
 
-export interface Item<T> {
-  value: UserInfos | ProfileInfos | ModuleInfos | MethodInfos | TransactionInfos;
-  label: string;
-}
 
-interface Props<T> {
-  data: Item<T> | null;
-  title: string;
+interface Props {
   onDecline: () => void;
+  onUpdate: ()=>void;
   isOpen: boolean;
-  dataType: string;
+  children: React.ReactNode;
 }
 
-const MoreInfosModal = <T,>({
-  title,
+const InfosModal = <T,>({
   onDecline,
+  onUpdate,
   isOpen,
-  dataType,
-  data,
-}: Props<T>) => {
+  children
+}: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
-  if(data){
-    console.log(data.value)
-  }
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -37,24 +23,13 @@ const MoreInfosModal = <T,>({
 
   const handleUpdate = () => {
     setIsModalOpen(false);
-    console.log(data)
-    onDecline();
+    onUpdate();
   };
 
   useEffect(() => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
-
-  const dataResponse = data;
-  switch (dataType) {
-    case 'usuário':
-        
-        break;
   
-    default:
-        break;
-  }
-
   if (isModalOpen) {
     return (
       <div
@@ -63,10 +38,9 @@ const MoreInfosModal = <T,>({
       >
         <div className="w-80 h-96 rounded-md flex flex-col content-between bg-white">
           <h1 className="bg-[#418713] w-full h-14 [border-radius:6px_6px_0_0] text-white text-center content-center font-bold mb-5">
-            {title}
           </h1>
           <p className="flex-1 text-center content-center p-10">
-            
+            {children}
           </p>
           <div className="flex gap-5 justify-end m-5">
             <button
@@ -89,4 +63,4 @@ const MoreInfosModal = <T,>({
   return null;
 };
 
-export default MoreInfosModal;
+export default InfosModal;

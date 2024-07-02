@@ -177,7 +177,6 @@ const ModuleManagement = () => {
         selectedTransactions.push(transaction.value.id);
       });
     }
-
     try {
       const form = {
         name: formData.name,
@@ -304,6 +303,7 @@ const ModuleManagement = () => {
               onDelete={(value) => handleDelete(value.id)}
               listEntity="o módulo"
               searchPlaceHolder="módulo (Nome, TAG ou descrição)"
+              entityType="module"
             />
           </>
         )}

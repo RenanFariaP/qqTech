@@ -7,7 +7,7 @@ import LogoutSvg from "./svg/logout";
 import UserSvg from "./svg/userIcon";
 
 const Header = () => {
-  const { user, logout, openMenu } = useAuth();
+  const { user, logout, menuOpen } = useAuth();
   if (user.token === "") {
     return (
       <div className="flex justify-between items-center h-24 w-full bg-[#418713] p-10">
@@ -18,7 +18,7 @@ const Header = () => {
   return (
     <div className="flex justify-between items-center h-24 w-full bg-[#418713] p-10">
       <Image className="h-16 w-auto" src={logoMarca} alt="VerdeCard" />
-      <div className="lg:hidden block" onClick={openMenu}>
+      <div className="lg:hidden block" onClick={menuOpen}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="28"

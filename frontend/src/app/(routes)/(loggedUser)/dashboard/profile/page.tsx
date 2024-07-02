@@ -223,6 +223,7 @@ const ProfileManagement = () => {
             onDelete={(value) => handleDelete(value.id)}
             listEntity="o perfil"
             searchPlaceHolder="perfil (Nome ou descrição)"
+            entityType="profile"
           />
         </>
       )}

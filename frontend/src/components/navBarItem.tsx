@@ -10,7 +10,6 @@ type Props= {
 
 const NavBarItem = ({children, text, route}: Props) => {
   const pathName = usePathname();
-  console.log(pathName);
   useEffect(()=>{},[pathName])
   if(pathName === route){
     return (

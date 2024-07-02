@@ -3,7 +3,8 @@ import Pagination from "./pagination";
 import SearchInput from "./searchInput";
 import IconButton, { Icon } from "./iconButton";
 import ConfirmModal from "./confirmModal";
-import MoreInfosModal from "./moreInfos";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 const itemsPerPage = 7;
 
@@ -22,19 +23,19 @@ interface Props<T> {
   data: ListItem<T>[];
   onFilterChange: (value: string) => void;
   onDelete: (value: T) => void;
-  onDetail: (value: T) => void;
   listEntity: string;
   searchPlaceHolder: string;
+  entityType: string;
 }
 
-const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolder }: Props<T>) => {
+const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolder, entityType }: Props<T>) => {
   const [selectedEntity, setSelectedEntity] = useState<ListItem<T> | null>(
     null
   );
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const handleSearchChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -43,26 +44,18 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
     setCurrentPage(1);
   };
 
-  const handleDelete = (item: ListItem<T>) => {
-    console.log(item)
+  const handleDeleteConfirmation = (item: ListItem<T>) => {
     setIsDeleteModalOpen(true);
     setSelectedEntity(item);
   };
 
-  const handleItemInfos = (item: ListItem<T>) => {
-    setIsInfoModalOpen(true);
-    setSelectedEntity(item)
-    console.log(item);
+  const handleItemInfo = (item: ListItem<T>) => {
+    router.push(`/dashboard/${entityType}/edit/${item.uniqueIdentifier}`)
   };
 
   const handleDeleteModalCancel = () => {
     setSelectedEntity(null);
     setIsDeleteModalOpen(false);
-  };
-
-  const handleInfosModalCancel = () => {
-    setSelectedEntity(null);
-    setIsInfoModalOpen(false);
   };
 
   const handleDeleteModalConfirm = () => {
@@ -112,13 +105,13 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
                 <div className="flex gap-3 items-center justify-between w-full [border-top:1px_solid_#FFF] pt-2">
                   <div className="bg-red-700 w-full flex justify-center items-center py-1 rounded-md">
                     <IconButton
-                      onClick={() => handleDelete(data)}
+                      onClick={() => handleDeleteConfirmation(data)}
                       icon={Icon.delete}
                     />
                   </div>
                   <div className="bg-green-500 w-full text-center flex justify-center items-center py-1 rounded-md">
                     <IconButton
-                      onClick={() => handleItemInfos(data)}
+                      onClick={() => handleItemInfo(data)}
                       icon={Icon.more}
                     />
                   </div>
@@ -140,11 +133,11 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
                 </div>
                 <div className="flex gap-3 items-center">
                   <IconButton
-                    onClick={() => handleDelete(data)}
+                    onClick={() => handleDeleteConfirmation(data)}
                     icon={Icon.delete}
                   />
                   <IconButton
-                    onClick={() => handleItemInfos(data)}
+                    onClick={() => handleItemInfo(data)}
                     icon={Icon.more}
                   />
                 </div>

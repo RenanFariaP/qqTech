@@ -12,10 +12,12 @@ def get_module(db: Session, module_id: int):
     return db_module
 
 def get_module_by_name(db: Session, name: str):
-    return db.query(models.Module).filter(models.Module.name == name).first()
+    db_module = db.query(models.Module).filter(models.Module.name == name).first()
+    return db_module
 
 def get_module_by_TAG(db: Session, TAG: str):
-    return db.query(models.Module).filter(models.Module.TAG == TAG).first()
+    db_module = db.query(models.Module).filter(models.Module.TAG == TAG).first()
+    return db_module
 
 def get_modules(db: Session, skip:int=0, limit:int=100):
     return db.query(models.Module).offset(skip).limit(limit).all()
@@ -47,21 +49,15 @@ def delete_module(db:Session, module: Module):
     db.commit()
     return {"message": "Módulo deletado!"}
 
-# def add_transaction_to_module(db: Session, module_id: int, transaction_id: int):
-#     module = db.query(models.Module).filter(models.Module.id == module_id).first()
-#     transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
-#     module.transactions.append(transaction)
-#     db.commit()
-#     return module
-
-# def add_method_to_module(db: Session, module_id: int, method_id: int):
-#     module = db.query(models.Module).filter(models.Module.id == module_id).first()
-#     method = db.query(models.Method).filter(models.Method.id == method_id).first()
-#     module.methods.append(method)
-#     db.commit()
-#     return module
-
 def update_module(db: Session, module_data: UpdateModule, module: models.Module):
+    db_module_name = get_module_by_name(db, module_data.name);
+    db_module_TAG = get_module_by_TAG(db, module_data.TAG)
+    if db_module_name:
+        if db_module_name.id != module.id:
+            raise HTTPException(status_code=409, detail="O nome já está associado a outro módulo!")
+    if db_module_TAG:
+        if db_module_TAG.id != module.id:
+            raise HTTPException(status_code=409, detail="A TAG já está associada a outro módulo!")
     if module_data.name is not None:
         module.name = module_data.name
     if module_data.description is not None:
