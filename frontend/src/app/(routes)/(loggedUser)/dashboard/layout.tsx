@@ -13,7 +13,6 @@ function Dashboard({ children }: { children: React.ReactNode }) {
   const path = usePathname();
 
   useEffect(() => {
-    menuOpen();
   }, [path]);
 
   return (

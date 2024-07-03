@@ -128,48 +128,55 @@ const GetUser = ({ params }: { params: { id: string } }) => {
     handleGetUser(id);
   }, [params.id]);
   return (
-    <div className="flex items-center justify-center w-full h-full relative">
-      <div className="absolute top-10 right-14">
-        <GenericButton
-          onClick={() => router.push(`/dashboard/user/`)}
-          text="Voltar"
-          icon={Icon.return}
-          width="100px"
-        />
-      </div>
-      <div className="absolute bottom-10 right-14">
-        <GenericButton
-          onClick={() => router.push(`/dashboard/user/edit/${userId}`)}
-          text="Editar usuário"
-          icon={Icon.edit}
-          width="160px"
-        />
-      </div>
-      <div className="flex flex-col items-center justify-center bg-white p-5 rounded-md">
-        <div className="w-full flex items-center justify-center [border-bottom:1px_solid_#DDD] pb-2 mb-2 font-bold">
-          {username}
+    <div className="w-full h-full relative p-5 flex flex-col">
+      <div className="text-lg font-bold">Exibição de Usuário</div>
+      <div className="flex items-center justify-center w-full h-full relative">
+        <div className="absolute top-10 right-14">
+          <GenericButton
+            onClick={() => router.push(`/dashboard/user/`)}
+            text="Voltar"
+            icon={Icon.return}
+            width="100px"
+          />
         </div>
-        <div>
-          <div className="m-2">Email: {email}</div>
-          <div className="flex w-full justify-between">
-            <div className="m-2">Matricula: {registration}</div>
-            <div
-              className="m-2 gap-2 flex"
-              onClick={() =>
-                profile
-                  ? router.push(`/dashboard/profile/get/${profile.id}`)
-                  : {}
-              }
-            >
-              <p>Perfil:</p>
-              <p className="cursor-pointer hover:text-zinc-500">
-                {profile ? profile.name : ""}
-              </p>
+        <div className="absolute bottom-10 right-14">
+          <GenericButton
+            onClick={() => router.push(`/dashboard/user/edit/${userId}`)}
+            text="Editar usuário"
+            icon={Icon.edit}
+            width="160px"
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center bg-white p-5 rounded-md">
+          <div className="w-full flex items-center justify-center [border-bottom:1px_solid_#DDD] pb-2 mb-2 font-bold">
+            {username}
+          </div>
+          <div>
+            <div className="m-2">Email: {email}</div>
+            <div className="flex w-full justify-between">
+              <div className="m-2">Matricula: {registration}</div>
+              <div
+                className="m-2 gap-2 flex"
+                onClick={() =>
+                  profile
+                    ? router.push(`/dashboard/profile/get/${profile.id}`)
+                    : {}
+                }
+              >
+                <p>Perfil:</p>
+                <p className="cursor-pointer hover:text-zinc-500">
+                  {profile ? profile.name : ""}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex flex-col w-full">
-          <TableList title="Módulos" data={modulesFormatted} route="/module/" />
+          <div className="flex flex-col w-full">
+            <TableList
+              title="Módulos"
+              data={modulesFormatted}
+              route="/module/"
+            />
+          </div>
         </div>
       </div>
     </div>
