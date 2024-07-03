@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import timedelta
 from typing import List
-from datetime import datetime, timedelta, timezone
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from datetime import datetime, timezone
 
 from . import models
 from app.schemas.user.loginsch import LoginRequest
-from app.schemas.user.passwordReset import PasswordResetRequest, PasswordResetVerify
+from app.schemas.user.passwordReset import PasswordResetRequest
 from app.schemas.profile.create import ProfileCreate
 from app.schemas.profile.update import UpdateProfile
 from app.schemasTest import Profile
@@ -26,9 +28,11 @@ from app.schemas.user.relation import UserWithRelation
 
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from .database import SessionLocal, engine
+from dotenv import load_dotenv
+load_dotenv()
+import os
 
 models.Base.metadata.create_all(bind=engine)
-
 
 app = FastAPI()
 origins = [
@@ -44,7 +48,8 @@ app.add_middleware(
 )
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
+MAIL_USERNAME = MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+MAIL_PASSWORD = MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
 def get_db():
     db = SessionLocal()
@@ -53,8 +58,43 @@ def get_db():
     finally:
         db.close()
         
-# def token_verifier(db: Session = Depends(get_db), token=Depends(oauth_scheme)):
-#     loginRepository.verify_token(db, access_token=token)
+conf = ConnectionConfig(
+    MAIL_USERNAME = "b4ac2d631fbc9d",
+    MAIL_PASSWORD = '406d0e8f2d9881',
+    MAIL_FROM = 'qqtechrecuperacaosenha@hotmail.com',
+    MAIL_PORT=587,
+    MAIL_SERVER="sandbox.smtp.mailtrap.io",
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
+    USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True
+)
+
+#Reset Password
+@app.post("/send-recovery-token/")
+async def send_recovery_token(request: PasswordResetRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    html = """
+    Olá, este é o token para recuperação de senha: <strong>{token}</strong>
+    """
+    user = userRepository.get_user_by_email(db, request.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="O email não está vinculado a nenhum usuário!")
+    token = loginRepository.generate_token()
+    expiration_time = datetime.now(timezone.utc) + timedelta(minutes=5)
+    user.reset_token = token
+    user.token_expiration = expiration_time
+    db.commit()
+    message = MessageSchema(
+        subject="Recuperação de senha QQTech",
+        recipients=[request.email],
+        body=html.format(token=token),
+        subtype="html"
+    )
+    fm = FastMail(conf)
+    background_tasks.add_task(fm.send_message, message)
+    
+    return {"message": "O token foi enviado para o email!"}
+
         
 #Login authentication
 @app.post('/login')
@@ -66,8 +106,6 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
         access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
         return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
     raise HTTPException(status_code=400, detail="Email ou senha inválido!")
-
-#Reset password
 
 
 #Profile

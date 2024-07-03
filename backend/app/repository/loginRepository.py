@@ -3,6 +3,7 @@ from jose import jwt
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from jose import jwt
+from random import randint
 
 load_dotenv()
 import os
@@ -24,3 +25,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def generate_token():
+    return str(randint(100000, 999999))
