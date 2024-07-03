@@ -26,7 +26,6 @@ const page = () => {
     }
     try {
       const response: ResponseData = await axios.post('http://localhost:8000/send-recovery-token', form);
-      console.log(response)
       Notify('success', response.data.message)
       setTimeout(()=>router.push('/reset_password'), 3000);
     } catch (error) {

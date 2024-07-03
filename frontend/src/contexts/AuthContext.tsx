@@ -10,6 +10,7 @@ interface AuthUser {
   email: string;
   token: string;
   username: string;
+  userId: string;
 }
 
 interface ResponseData {
@@ -17,6 +18,7 @@ interface ResponseData {
     access_token: string;
     email: string;
     username: string;
+    userId: string;
   };
 }
 
@@ -24,7 +26,7 @@ const AuthContext = createContext({
   loading: true,
   login: async (email: string, password: string) => {},
   logout: () => {},
-  user: { email: "", token: "", username: "" },
+  user: { email: "", token: "", username: "", userId: ""},
   menuOpen : () => {},
   isMenuOpen: false
 });
@@ -34,6 +36,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: "",
     token: "",
     username: "",
+    userId: ""
   });
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsOpenMenu] = useState(false);
@@ -44,8 +47,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
     const email = localStorage.getItem("email");
     const username = localStorage.getItem("username");
-    if (token && email && username) {
-      setUser({ email, token, username });
+    const userId = localStorage.getItem("userId")
+    if (token && email && username && userId) {
+      setUser({ email, token, username, userId });
     }
     setLoading(false);
     setIsOpenMenu(false);
@@ -56,7 +60,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email: email,
       password: password,
     };
-    console.log(form);
     try {
       const response: ResponseData = await axios.post(
         "http://localhost:8000/login",
@@ -66,10 +69,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const token = response.data.access_token;
         const email = response.data.email;
         const username = response.data.username;
+        const userId = response.data.userId
         localStorage.setItem("token", response.data.access_token);
         localStorage.setItem("email", response.data.email);
         localStorage.setItem("username", response.data.username);
-        setUser({ email, token, username });
+        localStorage.setItem("userId", response.data.userId);
+        setUser({ email, token, username, userId });
         router.replace("/dashboard");
       }
     } catch (error) {
@@ -83,7 +88,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("username");
-    setUser({ email: "", token: "", username: "" });
+    setUser({ email: "", token: "", username: "", userId: "" });
     router.replace("/login");
   };
 

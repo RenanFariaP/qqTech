@@ -73,10 +73,11 @@ const FunctionManagement = () => {
       const {data} = response;
       const formatted = formatMethods(data);
       setMethods(data);
-      console.log(data)
       setMethodList(formatted);
     } catch (error) {
-      console.error("Erro ao listar as funções:", error);
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   }
 
@@ -88,9 +89,7 @@ const FunctionManagement = () => {
         description: formData.description,
         TAG: formData.TAG
       }
-      console.log(form)
       const response = await axios.post("http://localhost:8000/dashboard/method", form);
-      console.log('Função cadastrada com sucesso!')
       Notify('success', 'Função cadastrada com sucesso!');
       formData.name = "";
       formData.description = "";

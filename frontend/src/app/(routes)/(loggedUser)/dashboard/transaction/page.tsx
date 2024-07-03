@@ -64,10 +64,11 @@ const TransactionManagement = () => {
       const {data} = response;
       const formatted = formatTransactions(data);
       setTransactions(data);
-      console.log(data)
       setTransactionList(formatted);
     } catch (error) {
-      console.error("Erro ao listar as funções:", error);
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -76,7 +77,9 @@ const TransactionManagement = () => {
       const response = await axios.delete(`http://localhost:8000/dashboard/transaction/${id}`);
       Notify("success", "Transação deletada com sucesso!");
     } catch (error) {
-      Notify("error", "Não foi possível deletar a transação!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     } finally {
       fetchTransactionList();
     }

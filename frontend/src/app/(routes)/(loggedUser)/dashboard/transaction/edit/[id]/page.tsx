@@ -71,7 +71,6 @@ const TransactionUpdate = ({ params }: { params: { id: string } }) => {
             description: getTransactionForm.description,
             TAG: getTransactionForm.TAG
           };
-          console.log(form);
       const response = await axios.put(
         `http://localhost:8000/dashboard/transaction/${entityID}`,
         form

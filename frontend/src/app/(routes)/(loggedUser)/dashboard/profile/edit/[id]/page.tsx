@@ -89,7 +89,9 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
       const formatted = formatModuleOptions(data);
       setModuleOptions(formatted);
     } catch (error) {
-      Notify('error', 'Não foi possível listar os módulos cadastrados!');
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -105,7 +107,6 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
           setModuleSelectedOption(formatSelectedModules(response.data.modules));
         }
         setGetProfileForm(profileDetails);
-        console.log(profileDetails);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
@@ -127,12 +128,12 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
         description: getProfileForm.description,
         modules: selectedModules
       };
-      console.log(form);
+
       const response = await axios.put(
         `http://localhost:8000/dashboard/profile/${entityID}`,
         form
       );
-      Notify('success', 'Módulo atualizado com sucesso!')
+      Notify('success', 'Perfil atualizado com sucesso!')
       getProfileForm.name= "";
       getProfileForm.description = "";
       setModuleSelectedOption([]);

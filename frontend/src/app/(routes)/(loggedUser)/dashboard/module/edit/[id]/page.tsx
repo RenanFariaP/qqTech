@@ -139,7 +139,9 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
       const formatted = formatMethodOptions(data);
       setMethodOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar as funções cadastradas!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -152,7 +154,9 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
       const formatted = formatTransactionOptions(data);
       setTransactionOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar as transações cadastradas!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -177,7 +181,6 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
         );
       }
       setGetModuleForm(moduleDetails);
-      console.log(moduleDetails);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
@@ -210,7 +213,6 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
         methods: selectedMethods,
         transactions: selectedTransactions,
       };
-      console.log(form);
       const response = await axios.put(
         `http://localhost:8000/dashboard/module/${entityID}`,
         form

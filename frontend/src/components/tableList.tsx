@@ -9,7 +9,6 @@ interface Props<T> {
 }
 const TableList = <T,>({ data, title, route }: Props<T>) => {
   const router = useRouter();
-  console.log(data);
   if (data.length === 0) {
     return null;
   }

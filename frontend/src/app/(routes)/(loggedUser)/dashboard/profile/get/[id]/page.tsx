@@ -48,13 +48,11 @@ const GetProfile = ({ params }: { params: { id: string } }) => {
       setProfileId(profile.id);
       setProfileName(profile.name);
       setDescription(profile.description);
-      console.log(profile.description.length);
       if (!profile.modules) {
         return;
       }
       const formatted = formatModules(profile.modules);
       setModulesFormatted(formatted);
-      console.log(formatted);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
@@ -84,7 +82,7 @@ const GetProfile = ({ params }: { params: { id: string } }) => {
         <div className="absolute lg:bottom-10 lg:right-14 bottom-6 right-9">
           <GenericButton
             onClick={() => router.push(`/dashboard/profile/edit/${profileId}`)}
-            text="Editar usuário"
+            text="Editar perfil"
             icon={Icon.edit}
             width="160px"
           />

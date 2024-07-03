@@ -6,7 +6,6 @@ import ConfirmModal from "./confirmModal";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Notify } from "./toast";
-import { ToastContainer } from "react-toastify";
 
 const itemsPerPage = 7;
 
@@ -41,10 +40,17 @@ const List = <T,>({
   const [selectedEntity, setSelectedEntity] = useState<ListItem<T> | null>(
     null
   );
+  const [loggedUserId, setLoggedUserId] = useState(0);
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const getLoggedUser = () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    setLoggedUserId(parseInt(userId));
+  };
 
   const handleSearchChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -54,6 +60,10 @@ const List = <T,>({
   };
 
   const handleDeleteConfirmation = (item: ListItem<T>) => {
+    if(loggedUserId === item.uniqueIdentifier){
+      Notify('error', "Não é possível fazer auto-exclusão!");
+      return;
+    }
     setIsDeleteModalOpen(true);
     setSelectedEntity(item);
   };
@@ -68,19 +78,7 @@ const List = <T,>({
   };
 
   const handleDeleteModalConfirm = () => {
-    const current_user_userId = localStorage.getItem("userId");
     if (!selectedEntity) return;
-    if (!current_user_userId) return;
-    print()
-    if (current_user_userId === selectedEntity.uniqueIdentifier.toString()) {
-      console.log("Parece que você está tentando deletar seu próprio usuário!")
-      Notify(
-        "error",
-        "Parece que você está tentando deletar seu próprio usuário!"
-      );
-      setIsDeleteModalOpen(false);
-      return;
-    }
     onDelete(selectedEntity.value);
     setIsDeleteModalOpen(false);
     setSelectedEntity(null);
@@ -88,6 +86,7 @@ const List = <T,>({
 
   useEffect(() => {
     onFilterChange(searchQuery);
+    getLoggedUser();
   }, [searchQuery]);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -99,7 +98,6 @@ const List = <T,>({
   return (
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">
-        <ToastContainer />
         <SearchInput
           placeholder={`Buscar ${searchPlaceHolder}`}
           value={searchQuery}
@@ -121,12 +119,12 @@ const List = <T,>({
                   ))}
                 </div>
                 <div className="flex gap-3 items-center justify-between w-full pt-2">
-                  <div className="bg-red-700 w-full flex justify-center items-center py-1 rounded-md">
-                    <IconButton
-                      onClick={() => handleDeleteConfirmation(data)}
-                      icon={Icon.delete}
-                    />
-                  </div>
+                    <div className="bg-red-700 w-full flex justify-center items-center py-1 rounded-md">
+                      <IconButton
+                        onClick={() => handleDeleteConfirmation(data)}
+                        icon={Icon.delete}
+                      />
+                    </div>
                   <div className="bg-green-500 w-full text-center flex justify-center items-center py-1 rounded-md">
                     <IconButton
                       onClick={() => handleItemInfo(data)}

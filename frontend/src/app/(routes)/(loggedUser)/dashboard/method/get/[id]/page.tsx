@@ -21,7 +21,6 @@ const GetMethod = ({ params }: { params: { id: string } }) => {
         `http://localhost:8000/dashboard/method/${id}`
       );
       const method = response.data;
-      console.log(method);
       setMethodId(method.id);
       setName(method.name);
       setDescription(method.description);

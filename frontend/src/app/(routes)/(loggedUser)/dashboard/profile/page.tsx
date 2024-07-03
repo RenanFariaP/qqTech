@@ -81,12 +81,13 @@ const ProfileManagement = () => {
         "http://localhost:8000/dashboard/profile"
       );
       const { data } = response;
-      console.log(data);
       const formatted = formatProfiles(data);
       setProfiles(data);
       setProfileList(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar os perfis cadastrados!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -99,7 +100,9 @@ const ProfileManagement = () => {
       const formatted = formatModuleOptions(data);
       setModuleOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar os módulos cadastrados!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 

@@ -9,7 +9,6 @@ interface Props {
 }
 
 export const Notify = (type: string, message: string) => {
-  console.log('entrou')
     switch (type) {
       case "error":
         toast.error(`${message}`, {

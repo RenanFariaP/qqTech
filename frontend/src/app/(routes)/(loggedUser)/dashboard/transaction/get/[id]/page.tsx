@@ -21,7 +21,6 @@ const GetTransaction = ({ params }: { params: { id: string } }) => {
         `http://localhost:8000/dashboard/transaction/${id}`
       );
       const transaction = response.data;
-      console.log(transaction);
       setTransactionId(transaction.id);
       setName(transaction.name);
       setDescription(transaction.description);

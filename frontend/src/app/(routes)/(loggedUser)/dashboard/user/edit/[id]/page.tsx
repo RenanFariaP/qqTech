@@ -100,7 +100,9 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
       const formatted = formatProfileOptions(data);
       setProfileOptions(formatted);
     } catch (error) {
-      Notify('error', 'Não foi possível listar os perfis cadastrados!');
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -115,11 +117,9 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
             profile_id: response.data.profile_id
         }
         if(response.data.profile){
-          console.log(response.data.profile);
           setProfileSelectedOption(formatProfileSelected(response.data.profile));
         }
         setGetUserForm(userDetails);
-        console.log(userDetails);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
@@ -136,7 +136,6 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
         registration: getUserForm.registration,
         profile_id: profileSelectedOption?.value.id,
       };
-      console.log(form);
       const response = await axios.put(
         `http://localhost:8000/dashboard/user/${entityID}`,
         form

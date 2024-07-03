@@ -100,7 +100,9 @@ const UserManagement = () => {
       await axios.delete(`http://localhost:8000/dashboard/user/${id}`);
       Notify('success', 'Usuário deletado com sucesso!');
     } catch (error) {
-      Notify('error', 'Não foi possível deletar o usuário!');
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     } finally {
       fetchUserList();
     }
@@ -116,7 +118,9 @@ const UserManagement = () => {
       setUsers(data);
       setUserList(formatted);
     } catch (error) {
-      Notify('error', 'Não foi possível listar os usuários cadastrados!');
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -129,7 +133,9 @@ const UserManagement = () => {
       const formatted = formatProfileOptions(data);
       setProfileOptions(formatted);
     } catch (error) {
-      Notify('error', 'Não foi possível listar os perfis cadastrados!');
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 

@@ -116,10 +116,11 @@ const ModuleManagement = () => {
       const { data } = response;
       const formatted = formatModules(data);
       setModules(data);
-      console.log(data);
       setModuleList(formatted);
     } catch (error) {
-      console.error("Erro ao listar os módulos:", error);
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -132,7 +133,9 @@ const ModuleManagement = () => {
       const formatted = formatMethodOptions(data);
       setMethodOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar as funções cadastradas!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -145,7 +148,9 @@ const ModuleManagement = () => {
       const formatted = formatTransactionOptions(data);
       setTransactionOptions(formatted);
     } catch (error) {
-      Notify("error", "Não foi possível listar as transações cadastradas!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     }
   };
 
@@ -156,7 +161,9 @@ const ModuleManagement = () => {
       );
       Notify("success", "Módulo deletado com sucesso!");
     } catch (error) {
-      Notify("error", "Não foi possível deletar o módulo!");
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
     } finally {
       fetchModuleList();
     }

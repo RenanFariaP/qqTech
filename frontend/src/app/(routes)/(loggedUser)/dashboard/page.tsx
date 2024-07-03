@@ -1,6 +1,8 @@
 "use client";
 
 import Charts, { Icon } from "@/components/charts";
+import { Notify } from "@/components/toast";
+import { Error } from "@/types/error";
 import { Method } from "@/types/method";
 import { Module } from "@/types/module";
 import { Profile } from "@/types/profile";
@@ -22,9 +24,12 @@ export default function page() {
         "http://localhost:8000/dashboard/user"
       );
       const {data} = response;
-      console.log(data.length);
       setUsers(data.length)
-    } catch (error) {}
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
+    }
   };
   const registerProfile = async () => {
     try {
@@ -32,9 +37,12 @@ export default function page() {
         "http://localhost:8000/dashboard/profile"
       );
       const {data} = response;
-      console.log(data.length);
       setProfiles(data.length)
-    } catch (error) {}
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
+    }
   };
   const registerModule = async () => {
     try {
@@ -42,9 +50,12 @@ export default function page() {
         "http://localhost:8000/dashboard/module"
       );
       const {data} = response;
-      console.log(data.length);
       setModules(data.length)
-    } catch (error) {}
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
+    }
   };
   const registerTransaction = async () => {
     try {
@@ -52,9 +63,12 @@ export default function page() {
         "http://localhost:8000/dashboard/transaction"
       );
       const {data} = response;
-      console.log(data.length);
       setTransactions(data.length)
-    } catch (error) {}
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
+    }
   };
   const registerMethod = async () => {
     try {
@@ -62,12 +76,14 @@ export default function page() {
         "http://localhost:8000/dashboard/method"
       );
       const {data} = response;
-      console.log(data.length);
       setMethods(data.length)
-    } catch (error) {}
+    } catch (error) {
+      const e = error as Error;
+      const message = e.response.data.detail;
+      Notify('error', message);
+    }
   };
   
-  console.log(users)
   useEffect(() => {
     registerUser();
     registerProfile();
