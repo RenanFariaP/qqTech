@@ -89,20 +89,20 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
               <div
                 className="lg:hidden flex flex-col items-center bg-[#418713] rounded-md mb-5 w-auto p-4 text-white"
               >
-                <div className="text-center [border-bottom:1px_solid_#FFF] w-full font-bold">
+                <div className="text-center w-full font-bold">
                   {data.label}
                 </div>
-                <div className="flex flex-col items-center py-2">
+                <div className="flex flex-col items-center py-2 ">
                   {data.cols.map((column, index) => (
                     <p
-                      className="mx-2 text-center text-wrap min-w-80"
+                      className="mx-2 text-center text-wrap min-w-80 [border-top:1px_solid_#FFF] p-1"
                       key={column.value + index}
                     >
                       {column.value}
                     </p>
                   ))}
                 </div>
-                <div className="flex gap-3 items-center justify-between w-full [border-top:1px_solid_#FFF] pt-2">
+                <div className="flex gap-3 items-center justify-between w-full pt-2">
                   <div className="bg-red-700 w-full flex justify-center items-center py-1 rounded-md">
                     <IconButton
                       onClick={() => handleDeleteConfirmation(data)}

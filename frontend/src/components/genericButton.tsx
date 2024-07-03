@@ -23,7 +23,7 @@ interface Props {
   width?: string;
 }
 
-const GenericButton = ({ text, icon, onClick,width="240px" }: Props) => {
+const GenericButton = ({ text, icon, onClick,width="auto" }: Props) => {
   return (
     <button
       onClick={onClick}

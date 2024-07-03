@@ -18,7 +18,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
   return (
     <section className="flex w-full h-full lg:static relative">
       {isMenuOpen ? (
-        <div className="w-[430px] bg-white h-full flex lg:static absolute left-0 flex-col gap-5 justify-between shadow-md p-2 [transition:0.5s_cubic-bezier(0.075,0.82,0.165,1)]">
+        <div className="w-[430px] bg-white h-full flex lg:static z-50 absolute left-0 flex-col gap-5 justify-between shadow-md p-2 [transition:0.5s_cubic-bezier(0.075,0.82,0.165,1)]">
           <div className="flex flex-col gap-5">
             <NavBarItem route="/dashboard" text="Dashboard administrativo">
               <svg
@@ -148,7 +148,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       ) : (
-        <div className="w-[430px] bg-white h-full lg:flex lg:static absolute left-[-430px] flex-col gap-5 shadow-md p-2 [transition:0.5s_cubic-bezier(0.075,0.82,0.165,1)]">
+        <div className="w-[430px] bg-white h-full lg:flex lg:static z-50 absolute left-[-430px] flex-col gap-5 shadow-md p-2 [transition:0.5s_cubic-bezier(0.075,0.82,0.165,1)]">
           <NavBarItem route="/dashboard" text="Dashboard administrativo">
             <svg
               xmlns="http://www.w3.org/2000/svg"

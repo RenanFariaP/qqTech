@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import timedelta
 from typing import List
+from datetime import datetime, timedelta, timezone
 
 from . import models
 from app.schemas.user.loginsch import LoginRequest
+from app.schemas.user.passwordReset import PasswordResetRequest, PasswordResetVerify
 from app.schemas.profile.create import ProfileCreate
 from app.schemas.profile.update import UpdateProfile
 from app.schemasTest import Profile
@@ -22,15 +23,12 @@ from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UpdateUser
 from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.security import OAuth2PasswordBearer
 
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-# oauth_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
 app = FastAPI()
 origins = [
@@ -69,13 +67,8 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
         return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
     raise HTTPException(status_code=400, detail="Email ou senha inválido!")
 
-# async def login(request: OAuth2PasswordRequestForm = Depends(), db:Session=Depends(get_db)):
-#     login_form = LoginRequest(email = request.username, password=request.password)
-#     return loginRepository.user_login(loginRequest=login_form, db=db)
+#Reset password
 
-# @app.get('/user_verify')
-# def user_verify(token_verify = Depends(token_verifier)):
-#     return "Usuário verificado!"
 
 #Profile
 #Create a profile

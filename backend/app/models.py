@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .database import Base
 from typing import List
 from datetime import datetime, timezone
-#from pytz import timezone
 
 def current_time():
     return datetime.now(timezone.utc)
@@ -45,6 +44,8 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     registration = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
+    reset_token = Column(String(6), nullable=True)
+    token_expiration = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=current_time)
     updated_at = Column(DateTime, default=current_time, onupdate=current_time)
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id'), nullable=True);

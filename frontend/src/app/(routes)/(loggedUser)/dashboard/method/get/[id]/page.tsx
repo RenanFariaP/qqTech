@@ -43,8 +43,8 @@ const GetMethod = ({ params }: { params: { id: string } }) => {
   return (
     <div className="w-full h-full relative p-5 flex flex-col">
       <div className="text-lg font-bold">Exibição de Função</div>
-      <div className="flex items-center justify-center w-full h-full relative">
-        <div className="absolute top-10 right-14">
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="absolute lg:top-10 lg:right-14 top-4 right-9">
           <GenericButton
             onClick={() => router.push(`/dashboard/method/`)}
             text="Voltar"
@@ -52,7 +52,7 @@ const GetMethod = ({ params }: { params: { id: string } }) => {
             width="100px"
           />
         </div>
-        <div className="absolute bottom-10 right-14">
+        <div className="absolute lg:bottom-10 lg:right-14 bottom-6 right-9">
           <GenericButton
             onClick={() => router.push(`/dashboard/method/edit/${methodId}`)}
             text="Editar função"
