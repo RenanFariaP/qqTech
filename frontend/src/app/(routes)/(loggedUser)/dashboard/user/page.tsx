@@ -106,10 +106,6 @@ const UserManagement = () => {
     }
   };
 
-  const handleGetUser = async (item: UserWithRelation)=>{
-    console.log(item);
-  }
-
   const fetchUserList = async () => {
     try {
       const response = await axios.get<UserWithRelation[]>(

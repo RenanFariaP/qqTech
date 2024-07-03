@@ -5,6 +5,8 @@ import IconButton, { Icon } from "./iconButton";
 import ConfirmModal from "./confirmModal";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { Notify } from "./toast";
+import { ToastContainer } from "react-toastify";
 
 const itemsPerPage = 7;
 
@@ -28,7 +30,14 @@ interface Props<T> {
   entityType: string;
 }
 
-const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolder, entityType }: Props<T>) => {
+const List = <T,>({
+  data,
+  onFilterChange,
+  listEntity,
+  onDelete,
+  searchPlaceHolder,
+  entityType,
+}: Props<T>) => {
   const [selectedEntity, setSelectedEntity] = useState<ListItem<T> | null>(
     null
   );
@@ -50,7 +59,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
   };
 
   const handleItemInfo = (item: ListItem<T>) => {
-    router.push(`/dashboard/${entityType}/get/${item.uniqueIdentifier}`)
+    router.push(`/dashboard/${entityType}/get/${item.uniqueIdentifier}`);
   };
 
   const handleDeleteModalCancel = () => {
@@ -59,7 +68,19 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
   };
 
   const handleDeleteModalConfirm = () => {
+    const current_user_userId = localStorage.getItem("userId");
     if (!selectedEntity) return;
+    if (!current_user_userId) return;
+    print()
+    if (current_user_userId === selectedEntity.uniqueIdentifier.toString()) {
+      console.log("Parece que você está tentando deletar seu próprio usuário!")
+      Notify(
+        "error",
+        "Parece que você está tentando deletar seu próprio usuário!"
+      );
+      setIsDeleteModalOpen(false);
+      return;
+    }
     onDelete(selectedEntity.value);
     setIsDeleteModalOpen(false);
     setSelectedEntity(null);
@@ -78,6 +99,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
   return (
     <>
       <div className="flex flex-col mt-5 gap-4 w-full h-full">
+        <ToastContainer />
         <SearchInput
           placeholder={`Buscar ${searchPlaceHolder}`}
           value={searchQuery}
@@ -86,12 +108,8 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
         <div className="lg:flex flex-col gap-4 flex-1">
           {paginatedEntity.map((data) => (
             <div key={data.uniqueIdentifier}>
-              <div
-                className="lg:hidden flex flex-col items-center bg-[#418713] rounded-md mb-5 w-auto p-4 text-white"
-              >
-                <div className="text-center w-full font-bold">
-                  {data.label}
-                </div>
+              <div className="lg:hidden flex flex-col items-center bg-[#418713] rounded-md mb-5 w-auto p-4 text-white">
+                <div className="text-center w-full font-bold">{data.label}</div>
                 <div className="flex flex-col items-center py-2 ">
                   {data.cols.map((column, index) => (
                     <p
@@ -117,9 +135,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
                   </div>
                 </div>
               </div>
-              <div
-                className="hidden lg:flex justify-between bg-[#418713] rounded-md text-white font-semibold p-5"
-              >
+              <div className="hidden lg:flex justify-between bg-[#418713] rounded-md text-white font-semibold p-5">
                 <div className="flex items-center">
                   <p className="w-32">{data.label}</p>
                   {data.cols.map((column, index) => (

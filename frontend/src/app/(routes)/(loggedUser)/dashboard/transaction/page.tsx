@@ -93,7 +93,6 @@ const TransactionManagement = () => {
       }
       const response = await axios.post("http://localhost:8000/dashboard/transaction", form);
       Notify('success', 'Transação cadastrada com sucesso!');
-      console.log("Resposta do servidor:", response.data);
       formData.name = "";
       formData.description = "";
       formData.TAG = "";

@@ -1,14 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+import pytz
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from typing import List
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from datetime import datetime, timezone
+from .database import SessionLocal, engine
 
 from . import models
 from app.schemas.user.loginsch import LoginRequest
-from app.schemas.user.passwordReset import PasswordResetRequest
+from app.schemas.user.passwordReset import PasswordResetRequest, PasswordResetVerify
 from app.schemas.profile.create import ProfileCreate
 from app.schemas.profile.update import UpdateProfile
 from app.schemasTest import Profile
@@ -27,7 +29,6 @@ from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
 
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
-from .database import SessionLocal, engine
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -51,6 +52,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 MAIL_USERNAME = MAIL_USERNAME = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD = MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
+#utc=pytz.UTC
+
 def get_db():
     db = SessionLocal()
     try : 
@@ -71,8 +74,10 @@ conf = ConnectionConfig(
 )
 
 #Reset Password
-@app.post("/send-recovery-token/")
+@app.post("/send-recovery-token")
 async def send_recovery_token(request: PasswordResetRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    print('----------------------------------------')
+    print(request.email)
     html = """
     Olá, este é o token para recuperação de senha: <strong>{token}</strong>
     """
@@ -80,7 +85,7 @@ async def send_recovery_token(request: PasswordResetRequest, background_tasks: B
     if not user:
         raise HTTPException(status_code=404, detail="O email não está vinculado a nenhum usuário!")
     token = loginRepository.generate_token()
-    expiration_time = datetime.now(timezone.utc) + timedelta(minutes=5)
+    expiration_time = datetime.utcnow() + timedelta(minutes=5)
     user.reset_token = token
     user.token_expiration = expiration_time
     db.commit()
@@ -95,7 +100,25 @@ async def send_recovery_token(request: PasswordResetRequest, background_tasks: B
     
     return {"message": "O token foi enviado para o email!"}
 
-        
+@app.post("/password-reset/verify")
+async def password_reset_verify(request: PasswordResetVerify, db: Session = Depends(get_db)):
+    user = userRepository.get_user_by_email(db, request.email)
+    token_expiration = user.token_expiration
+    if not user:
+        raise HTTPException(status_code=404, detail="O email não pertence a um usuário cadastrado!")
+    if user.reset_token !=request.token:
+        raise HTTPException(status_code=401, detail="O token inválido!")
+    if token_expiration < datetime.utcnow():
+        user.reset_token = None
+        user.token_expiration = None
+        raise HTTPException(status_code=401, detail="O token expiradou!")
+    hashed_password = userRepository.get_password_hash(request.new_password)
+    user.password = hashed_password
+    user.reset_token = None
+    user.token_expiration = None
+    db.commit()
+    return {"message": "Senha alterada com sucesso"}
+
 #Login authentication
 @app.post('/login')
 async def login(request: LoginRequest, db:Session=Depends(get_db)):
@@ -104,7 +127,7 @@ async def login(request: LoginRequest, db:Session=Depends(get_db)):
     if db_user and verify_password:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
-        return {"access_token": access_token, "email": db_user.email, "username":db_user.username}
+        return {"access_token": access_token, "email": db_user.email, "username":db_user.username, "userId": db_user.id}
     raise HTTPException(status_code=400, detail="Email ou senha inválido!")
 
 

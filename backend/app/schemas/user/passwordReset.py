@@ -1,9 +1,9 @@
 from pydantic import BaseModel, EmailStr
 
 class PasswordResetRequest(BaseModel):
-    email: EmailStr
+    email: str
 
 class PasswordResetVerify(BaseModel):
-    email: EmailStr
+    email: str
     token: str
     new_password: str
