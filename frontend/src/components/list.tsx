@@ -14,7 +14,7 @@ export interface ListColumn<T> {
 
 export interface ListItem<T> {
   value: T;
-  uniqueIdentifier: string | number;
+  uniqueIdentifier: number;
   cols: ListColumn<T>[];
   label: string;
 }
@@ -50,7 +50,7 @@ const List = <T,>({ data, onFilterChange, listEntity, onDelete, searchPlaceHolde
   };
 
   const handleItemInfo = (item: ListItem<T>) => {
-    router.push(`/dashboard/${entityType}/edit/${item.uniqueIdentifier}`)
+    router.push(`/dashboard/${entityType}/get/${item.uniqueIdentifier}`)
   };
 
   const handleDeleteModalCancel = () => {
