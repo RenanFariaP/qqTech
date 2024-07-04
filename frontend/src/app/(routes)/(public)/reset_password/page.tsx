@@ -18,22 +18,29 @@ interface ResponseData {
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
-  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if(newPassword != newPasswordConfirmation){
+      Notify('error', "As senhas não estão iguais!");
+      return;
+    }
     const form = {
       email: email,
       token: token,
-      password: password
+      newPassword: newPassword
     }
+    console.log(form)
     try {
-      const response = await axios.post('http://localhost:8000/send-recovery-token', form);
+      const response = await axios.post('http://localhost:8000/password-reset/verify', form);
+      console.log(form, response.data.message);
       Notify('success', response.data.message)
       setEmail('');
       setToken('');
-      setPassword('');
+      setNewPassword('');
       setTimeout(()=>{router.push('/login')}, 3000);
     } catch (error) {
         const e = error as Error;
@@ -60,10 +67,13 @@ const ResetPassword = () => {
           <TextInput label="E-mail" type="email" isRequired name="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
         </div>
         <div>
-          <TextInput label="Token" type="text" isRequired name="token" value={token} onChange={(e)=>setToken(e.target.value)} />
+          <TextInput label="PIN" type="text" isRequired name="token" value={token} onChange={(e)=>setToken(e.target.value)} />
         </div>
         <div>
-          <TextInput label="Nova senha" type="password" isRequired name="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+          <TextInput label="Nova senha" type="password" isRequired name="password" value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} />
+        </div>
+        <div>
+          <TextInput label="Confirme a senha" type="password" isRequired name="password" value={newPasswordConfirmation} onChange={(e)=>setNewPasswordConfirmation(e.target.value)} />
         </div>
         <div>
           <ButtonInput label="Enviar" />

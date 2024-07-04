@@ -1,0 +1,21 @@
+<html>
+<body style="margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif;">
+<div style="width: 100%; background: #efefef; border-radius: 10px; padding: 10px;">
+  <div style="margin: 0 auto; width: 90%; text-align: center;">
+    <h1 style="background-color: rgba(0, 53, 102, 1); padding: 5px 10px; border-radius: 5px; color: white;">{{ title }}</h1>
+    <div style="margin: 30px auto; background: white; width: 40%; border-radius: 10px; padding: 50px; text-align: center;">
+      <h3 style="margin-bottom: 50px; font-size: 24px;">Olá {{ name }}!</h3>
+      <p style="margin-bottom: 30px;">Uma solicitação de recuperação de senha foi feita para esse e-mail. Caso não tenha sido você o solicitante, basta ignorar.</p>
+      <p style="margin-bottom: 30px;">Utilize o PIN abaixo para juntamente com seu endereço de e-mail para alterar sua senha, basta cliclar no botão abaixo e será redirecionado para a página de alteração de senha.</p>
+      <p style="margin-bottom: 30px; font-size: 40px; font-weight: bold; background-color: #418713; color: #FFF; border-radius: 5px; width: auto; padding: 5px 20px 5px 20px;">{{token}}</p>
+      <a style="display: block; font-weight: bold; margin: 0 auto; border: none; background-color: rgba(255, 214, 10, 1); color: white; width: 200px; line-height: 24px; padding: 10px; font-size: 24px; border-radius: 10px; cursor: pointer; text-decoration: none;"
+        href="http://localhost:3000/reset_password"
+        target="_blank"
+      >
+        Vamos lá!
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

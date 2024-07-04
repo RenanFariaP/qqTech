@@ -27,7 +27,7 @@ from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UpdateUser
 from app.schemasTest import User
 from app.schemas.user.relation import UserWithRelation
-
+from jinja2 import Environment, FileSystemLoader
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
 from dotenv import load_dotenv
 load_dotenv()
@@ -62,11 +62,11 @@ def get_db():
         db.close()
         
 conf = ConnectionConfig(
-    MAIL_USERNAME = "b4ac2d631fbc9d",
-    MAIL_PASSWORD = '406d0e8f2d9881',
-    MAIL_FROM = 'qqtechrecuperacaosenha@hotmail.com',
+    MAIL_USERNAME = "qqtechrecuperarsenha@hotmail.com",
+    MAIL_PASSWORD = "msgbmdtqqwkaomow",
+    MAIL_FROM = "qqtechrecuperarsenha@hotmail.com",
     MAIL_PORT=587,
-    MAIL_SERVER="sandbox.smtp.mailtrap.io",
+    MAIL_SERVER="smtp-mail.outlook.com",
     MAIL_STARTTLS=True,
     MAIL_SSL_TLS=False,
     USE_CREDENTIALS=True,
@@ -76,11 +76,6 @@ conf = ConnectionConfig(
 #Reset Password
 @app.post("/send-recovery-token")
 async def send_recovery_token(request: PasswordResetRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    print('----------------------------------------')
-    print(request.email)
-    html = """
-    Olá, este é o token para recuperação de senha: <strong>{token}</strong>
-    """
     user = userRepository.get_user_by_email(db, request.email)
     if not user:
         raise HTTPException(status_code=404, detail="O email não está vinculado a nenhum usuário!")
@@ -88,17 +83,19 @@ async def send_recovery_token(request: PasswordResetRequest, background_tasks: B
     expiration_time = datetime.utcnow() + timedelta(minutes=5)
     user.reset_token = token
     user.token_expiration = expiration_time
+    env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
+    template = env.get_template('email.html')
+    html_content = template.render(title="Recuperação de senha QQTech", name=user.username, token=token)
     db.commit()
     message = MessageSchema(
         subject="Recuperação de senha QQTech",
         recipients=[request.email],
-        body=html.format(token=token),
+        body=html_content,
         subtype="html"
     )
     fm = FastMail(conf)
     background_tasks.add_task(fm.send_message, message)
-    
-    return {"message": "O token foi enviado para o email!"}
+    return {"message": "O PIN foi enviado para o email!"}
 
 @app.post("/password-reset/verify")
 async def password_reset_verify(request: PasswordResetVerify, db: Session = Depends(get_db)):
@@ -107,12 +104,12 @@ async def password_reset_verify(request: PasswordResetVerify, db: Session = Depe
     if not user:
         raise HTTPException(status_code=404, detail="O email não pertence a um usuário cadastrado!")
     if user.reset_token !=request.token:
-        raise HTTPException(status_code=401, detail="O token inválido!")
+        raise HTTPException(status_code=401, detail="PIN inválido!")
     if token_expiration < datetime.utcnow():
         user.reset_token = None
         user.token_expiration = None
-        raise HTTPException(status_code=401, detail="O token expiradou!")
-    hashed_password = userRepository.get_password_hash(request.new_password)
+        raise HTTPException(status_code=401, detail="PIN expirou!")
+    hashed_password = userRepository.get_password_hash(request.newPassword)
     user.password = hashed_password
     user.reset_token = None
     user.token_expiration = None

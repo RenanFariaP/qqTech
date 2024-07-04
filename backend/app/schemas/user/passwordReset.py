@@ -6,4 +6,4 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetVerify(BaseModel):
     email: str
     token: str
-    new_password: str
+    newPassword: str
