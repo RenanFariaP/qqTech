@@ -123,12 +123,14 @@ async def password_reset_verify(request: PasswordResetVerify, db: Session = Depe
 @app.post('/login')
 async def login(request: LoginRequest, db:Session=Depends(get_db)):
     db_user = userRepository.get_user_by_email(db, email=request.email)
-    verify_password = loginRepository.verify_password(request.password, db_user.password )
-    if db_user and verify_password:
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
-        return {"access_token": access_token, "email": db_user.email, "username":db_user.username, "userId": db_user.id}
-    raise HTTPException(status_code=400, detail="Email ou senha inválido!")
+    if db_user is None:
+        raise HTTPException(status_code=400, detail="Email e/ou senha inválido!")
+    verify_password = loginRepository.verify_password(request.password, db_user.password)
+    if verify_password is None:
+        raise HTTPException(status_code=400, detail="Email e/ou senha inválido!")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = loginRepository.create_access_token(data={"username": db_user.username, "registration": db_user.registration, "email": db_user.email}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "email": db_user.email, "username":db_user.username, "userId": db_user.id}
 
 
 #Profile
