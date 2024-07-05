@@ -76,9 +76,6 @@ const TransactionUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify("success", "Transação atualizada com sucesso!");
-      getTransactionForm.name = "";
-      getTransactionForm.description = "";
-      getTransactionForm.TAG = "";
       setTimeout(()=>router.replace('/dashboard/transaction'), 3000);
     } catch (error) {
       const e = error as Error;

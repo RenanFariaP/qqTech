@@ -218,11 +218,6 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify("success", "Módulo atualizado com sucesso!");
-      getModuleForm.name = "";
-      getModuleForm.description = "";
-      getModuleForm.TAG = "";
-      setMethodSelectedOption([]);
-      setTransactionSelectedOption([]);
       setTimeout(()=>router.replace('/dashboard/module'), 3000);
     } catch (error) {
       const e = error as Error;

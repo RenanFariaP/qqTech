@@ -76,9 +76,6 @@ const MethodUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify("success", "Função atualizada com sucesso!");
-      getMethodForm.name = "";
-      getMethodForm.description = "";
-      getMethodForm.TAG = "";
       setTimeout(()=>router.replace('/dashboard/method'), 3000);
     } catch (error) {
       const e = error as Error;

@@ -141,11 +141,6 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify('success', 'Usuário atualizado com sucesso!')
-      formData.username = "";
-      formData.email = "";
-      formData.registration = "";
-      formData.password = "";
-      setProfileSelectedOption(null);
       setTimeout(()=>router.replace('/dashboard/user'), 3000);
     } catch (error) {
       const e = error as Error;

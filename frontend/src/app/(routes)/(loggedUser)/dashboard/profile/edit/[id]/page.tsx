@@ -134,9 +134,6 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify('success', 'Perfil atualizado com sucesso!')
-      getProfileForm.name= "";
-      getProfileForm.description = "";
-      setModuleSelectedOption([]);
       setTimeout(()=>router.replace('/dashboard/profile'), 3000);
     } catch (error) {
       const e = error as Error;
