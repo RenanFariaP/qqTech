@@ -266,6 +266,7 @@ const ModuleManagement = () => {
                 onChange={(e) => handleChange("TAG", e.target.value)}
               />
               <div className="flex flex-col mt-5">
+                <div>Funções:</div>
                 <Select
                   className="w-80"
                   closeMenuOnSelect={false}
@@ -279,6 +280,7 @@ const ModuleManagement = () => {
                 />
               </div>
               <div className="flex flex-col mt-5">
+                <div>Transação:</div>
                 <Select
                   className="w-80"
                   closeMenuOnSelect={false}

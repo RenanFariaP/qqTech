@@ -269,7 +269,16 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
           value={getModuleForm.description}
           onChange={(e) => handleChange("description", e.target.value)}
         />
+        <TextInput
+          label="TAG"
+          type="text"
+          name="TAG"
+          isRequired={true}
+          value={getModuleForm.TAG}
+          onChange={(e) => handleChange("TAG", e.target.value)}
+        />
         <div className="flex flex-col mt-5">
+          <div>Funções:</div>
           <Select
             className="w-80"
             closeMenuOnSelect={false}
@@ -282,15 +291,8 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
             value={methodSelectedOption}
           />
         </div>
-        <TextInput
-          label="TAG"
-          type="text"
-          name="TAG"
-          isRequired={true}
-          value={getModuleForm.TAG}
-          onChange={(e) => handleChange("TAG", e.target.value)}
-        />
         <div className="flex flex-col mt-5">
+          <div>Transações:</div>
           <Select
             className="w-80"
             closeMenuOnSelect={false}
