@@ -30,6 +30,7 @@ interface GetMethodForm {
 const MethodUpdate = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [entityID, setEntityID] = useState<number>();
+  const [disabled, setDisabled] = useState(false);
   const [formData, setFormData] = useState<MethodUpdateForm>({
     name: "",
     description: "",
@@ -76,6 +77,7 @@ const MethodUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify("success", "Função atualizada com sucesso!");
+      setDisabled(true);
       setTimeout(()=>router.replace('/dashboard/method'), 3000);
     } catch (error) {
       const e = error as Error;
@@ -99,7 +101,7 @@ const MethodUpdate = ({ params }: { params: { id: string } }) => {
       <ToastContainer />
       <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold lg:text-xl text-lg">
-          Gerenciamento de usuário
+          Gerenciamento de Função
         </h1>
         <GenericButton
           onClick={() => router.push("/dashboard/method")}
@@ -126,7 +128,13 @@ const MethodUpdate = ({ params }: { params: { id: string } }) => {
           value={getMethodForm.TAG}
           onChange={(e) => handleChange("TAG", e.target.value)}
         />
-        <ButtonInput label="Enviar" onSubmit={() => {}} />
+        {disabled ? (
+          <div>
+            <button type='submit' className='flex justify-center items-center bg-zinc-400 py-2 px-7 rounded-md text-white my-5 shadow-sm' disabled>Enviar</button>
+          </div>
+        ) : (
+          <ButtonInput label="Enviar" onSubmit={() => {}}/>
+        )}
       </form>
     </div>
   );

@@ -87,7 +87,7 @@ const ModuleManagement = () => {
           value: module.description,
         },
         {
-          value: module.tag,
+          value: module.TAG,
         },
       ];
       return {
@@ -115,6 +115,8 @@ const ModuleManagement = () => {
       );
       const { data } = response;
       const formatted = formatModules(data);
+      console.log('formatted', formatted)
+      console.log('data', data)
       setModules(data);
       setModuleList(formatted);
     } catch (error) {
@@ -215,7 +217,7 @@ const ModuleManagement = () => {
     const filteredModules = modules.filter(
       (item) =>
         item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.tag.toLowerCase().includes(value.toLowerCase()) ||
+        item.TAG.toLowerCase().includes(value.toLowerCase()) ||
         item.description.toLowerCase().includes(value.toLowerCase())
     );
     setModuleList(formatModules(filteredModules));

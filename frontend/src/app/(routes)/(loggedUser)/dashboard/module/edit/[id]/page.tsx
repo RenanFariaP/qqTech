@@ -42,6 +42,7 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
   const [methodSelectedOption, setMethodSelectedOption] = useState<SelectOptions<MethodInfos>[]>([]);
   const [transactionOptions, setTransactionOptions] = useState<SelectOptions<TransactionInfos>[]>([]);
   const [transactionSelectedOption, setTransactionSelectedOption] = useState<SelectOptions<TransactionInfos>[]>([]);
+  const [disabled, setDisabled] = useState(false);
   
   const transactionUnselectedOptions:SelectOptions<TransactionInfos>[] = useMemo(()=>{
     const selectedOptionsIds = transactionSelectedOption.map((transaction)=>{
@@ -218,6 +219,7 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
         form
       );
       Notify("success", "Módulo atualizado com sucesso!");
+      setDisabled(true);
       setTimeout(()=>router.replace('/dashboard/module'), 3000);
     } catch (error) {
       const e = error as Error;
@@ -243,7 +245,7 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
       <ToastContainer />
       <div className="flex gap-16 items-center justify-between">
         <h1 className="font-bold lg:text-xl text-lg">
-          Gerenciamento de Perfil
+          Gerenciamento de Módulo
         </h1>
         <GenericButton
           onClick={() => router.push("/dashboard/module")}
@@ -280,6 +282,14 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
             value={methodSelectedOption}
           />
         </div>
+        <TextInput
+          label="TAG"
+          type="text"
+          name="TAG"
+          isRequired={true}
+          value={getModuleForm.TAG}
+          onChange={(e) => handleChange("TAG", e.target.value)}
+        />
         <div className="flex flex-col mt-5">
           <Select
             className="w-80"
@@ -293,7 +303,13 @@ const ModuleUpdate = ({ params }: { params: { id: string } }) => {
             value={transactionSelectedOption}
           />
         </div>
-        <ButtonInput label="Enviar" onSubmit={() => {}} />
+        {disabled ? (
+          <div>
+            <button type='submit' className='flex justify-center items-center bg-zinc-400 py-2 px-7 rounded-md text-white my-5 shadow-sm' disabled>Enviar</button>
+          </div>
+        ) : (
+          <ButtonInput label="Enviar" onSubmit={() => {}}/>
+        )}
       </form>
     </div>
   );

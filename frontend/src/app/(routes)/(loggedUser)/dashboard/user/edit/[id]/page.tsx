@@ -40,6 +40,7 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
   const [profileOptions, setProfileOptions] = useState<SelectOptions<ProfileInfos>[]>([]);
   const [profileSelectedOption, setProfileSelectedOption] = useState<SelectOptions<ProfileInfos> | null>(null);
   const [entityID, setEntityID] = useState<number>();
+  const [disabled, setDisabled] = useState(false);
 
   const profileUnselectedOptions: SelectOptions<ProfileInfos>[] = useMemo(() => {
     const selectedOptionId = profileSelectedOption?.value.id;
@@ -139,7 +140,8 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
         `http://localhost:8000/dashboard/user/${entityID}`,
         form
       );
-      Notify('success', 'Usuário atualizado com sucesso!')
+      Notify('success', 'Usuário atualizado com sucesso!');
+      setDisabled(true);
       setTimeout(()=>router.replace('/dashboard/user'), 3000);
     } catch (error) {
       const e = error as Error;
@@ -195,6 +197,7 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
           onChange={(e) => handleChange("registration", e.target.value)}
         />
         <div className="flex flex-col mt-5">
+          <div>Perfil:</div>
           <Select
                 className="w-80"
                 closeMenuOnSelect={true}
@@ -206,7 +209,13 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
                 value={profileSelectedOption}
               />
         </div>
-        <ButtonInput label="Enviar" onSubmit={() => {}} />
+        {disabled ? (
+          <div>
+            <button type='submit' className='flex justify-center items-center bg-zinc-400 py-2 px-7 rounded-md text-white my-5 shadow-sm' disabled>Enviar</button>
+          </div>
+        ) : (
+          <ButtonInput label="Enviar" onSubmit={() => {}}/>
+        )}
       </form>
     </div>
   );

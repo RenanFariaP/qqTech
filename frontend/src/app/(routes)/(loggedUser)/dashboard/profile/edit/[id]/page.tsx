@@ -26,7 +26,7 @@ interface ProfileUpdateForm {
 interface GetProfileForm {
   name: string;
   description: string;
-  }
+}
 
 interface SelectOptions<T> {
   value: T;
@@ -34,25 +34,30 @@ interface SelectOptions<T> {
 }
 
 const ProfileUpdate = ({ params }: { params: { id: string } }) => {
-  const [moduleOptions, setModuleOptions] = useState<SelectOptions<ModuleInfos>[]>([]);
-  const [moduleSelectedOption, setModuleSelectedOption] =useState<SelectOptions<ModuleInfos>[]>([]);
+  const [moduleOptions, setModuleOptions] = useState<
+    SelectOptions<ModuleInfos>[]
+  >([]);
+  const [moduleSelectedOption, setModuleSelectedOption] = useState<
+    SelectOptions<ModuleInfos>[]
+  >([]);
   const [entityID, setEntityID] = useState<number>();
+  const [disabled, setDisabled] = useState(false);
 
-  const moduleUnselectedOptions:SelectOptions<ModuleInfos>[] = useMemo(()=>{
-    const selectedOptionsIds = moduleSelectedOption.map((module)=>{
+  const moduleUnselectedOptions: SelectOptions<ModuleInfos>[] = useMemo(() => {
+    const selectedOptionsIds = moduleSelectedOption.map((module) => {
       return module.value.id;
     });
-    const result = moduleOptions.filter((module)=>{
+    const result = moduleOptions.filter((module) => {
       return !selectedOptionsIds.includes(module.value.id);
-    })
+    });
     return result;
-  },[moduleSelectedOption, moduleOptions]);
+  }, [moduleSelectedOption, moduleOptions]);
 
   const router = useRouter();
 
-  const [getProfileForm,  setGetProfileForm] = useState<GetProfileForm>({
+  const [getProfileForm, setGetProfileForm] = useState<GetProfileForm>({
     name: "",
-    description: ""
+    description: "",
   });
 
   const handleChange = (_name: keyof ProfileUpdateForm, _value: any) => {
@@ -63,7 +68,9 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
     setModuleSelectedOption(moduleSelectedOption);
   };
 
-  const formatModuleOptions = (data: ModuleInfos[]): SelectOptions<ModuleInfos>[] => {
+  const formatModuleOptions = (
+    data: ModuleInfos[]
+  ): SelectOptions<ModuleInfos>[] => {
     const options: SelectOptions<ModuleInfos>[] = data.map((module) => ({
       value: module,
       label: module.name,
@@ -71,14 +78,15 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
     return options;
   };
 
-  const formatSelectedModules = (data: ModuleInfos[]): SelectOptions<ModuleInfos>[] => {
+  const formatSelectedModules = (
+    data: ModuleInfos[]
+  ): SelectOptions<ModuleInfos>[] => {
     const options: SelectOptions<ModuleInfos>[] = data.map((module) => ({
       value: module,
       label: module.name,
     }));
     return options;
   };
-
 
   const fetchModuleList = async () => {
     try {
@@ -91,61 +99,64 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
-      Notify('error', message);
+      Notify("error", message);
     }
   };
 
-  const handleGetProfile = async (id: number) =>{
+  const handleGetProfile = async (id: number) => {
     try {
-        const response = await axios.get<ProfileInfos>(`http://localhost:8000/dashboard/profile/${id}`)
-        const profileDetails = {
-            name: response.data.name,
-            description: response.data.description,
-            modules: response.data.modules
-        }
-        if(response.data.modules){
-          setModuleSelectedOption(formatSelectedModules(response.data.modules));
-        }
-        setGetProfileForm(profileDetails);
+      const response = await axios.get<ProfileInfos>(
+        `http://localhost:8000/dashboard/profile/${id}`
+      );
+      const profileDetails = {
+        name: response.data.name,
+        description: response.data.description,
+        modules: response.data.modules,
+      };
+      if (response.data.modules) {
+        setModuleSelectedOption(formatSelectedModules(response.data.modules));
+      }
+      setGetProfileForm(profileDetails);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
       Notify("error", message);
     }
-  }
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const selectedModules: number[] = [];
-    if(moduleSelectedOption){
-      moduleSelectedOption.forEach(module => {
-        selectedModules.push(module.value.id)
+    if (moduleSelectedOption) {
+      moduleSelectedOption.forEach((module) => {
+        selectedModules.push(module.value.id);
       });
-    };
+    }
     try {
       const form = {
         name: getProfileForm.name,
         description: getProfileForm.description,
-        modules: selectedModules
+        modules: selectedModules,
       };
 
       const response = await axios.put(
         `http://localhost:8000/dashboard/profile/${entityID}`,
         form
       );
-      Notify('success', 'Perfil atualizado com sucesso!')
-      setTimeout(()=>router.replace('/dashboard/profile'), 3000);
+      Notify("success", "Perfil atualizado com sucesso!");
+      setDisabled(true);
+      setTimeout(() => router.replace("/dashboard/profile"), 3000);
     } catch (error) {
       const e = error as Error;
       const message = e.response.data.detail;
-      Notify('error', message);
-    } 
+      Notify("error", message);
+    }
   };
 
   useEffect(() => {
-    if(!params.id){
+    if (!params.id) {
       return;
-    };
+    }
     const id = parseInt(params.id);
     setEntityID(id);
     fetchModuleList();
@@ -160,7 +171,11 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
         <h1 className="font-bold lg:text-xl text-lg">
           Gerenciamento de Perfil
         </h1>
-        <GenericButton onClick={() => router.push('/dashboard/profile')} text="Voltar" icon={Icon.return} />
+        <GenericButton
+          onClick={() => router.push("/dashboard/profile")}
+          text="Voltar"
+          icon={Icon.return}
+        />
       </div>
       <form onSubmit={handleSubmit}>
         <h1></h1>
@@ -173,25 +188,31 @@ const ProfileUpdate = ({ params }: { params: { id: string } }) => {
           onChange={(e) => handleChange("name", e.target.value)}
         />
         <TextArea
-                label="do perfil"
-                name="description"
-                value={getProfileForm.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-              />
+          label="do perfil"
+          name="description"
+          value={getProfileForm.description}
+          onChange={(e) => handleChange("description", e.target.value)}
+        />
         <div className="flex flex-col mt-5">
           <Select
-                className="w-80"
-                closeMenuOnSelect={true}
-                components={animatedComponents}
-                defaultValue={[]}
-                isMulti={true}
-                name="options"
-                options={moduleUnselectedOptions}
-                onChange={handleSelectChange}
-                value={moduleSelectedOption}
-              />
+            className="w-80"
+            closeMenuOnSelect={false}
+            components={animatedComponents}
+            defaultValue={[]}
+            isMulti={true}
+            name="options"
+            options={moduleUnselectedOptions}
+            onChange={handleSelectChange}
+            value={moduleSelectedOption}
+          />
         </div>
-        <ButtonInput label="Enviar" onSubmit={() => {}} />
+        {disabled ? (
+          <div>
+            <button type='submit' className='flex justify-center items-center bg-zinc-400 py-2 px-7 rounded-md text-white my-5 shadow-sm' disabled>Enviar</button>
+          </div>
+        ) : (
+          <ButtonInput label="Enviar" onSubmit={() => {}}/>
+        )}
       </form>
     </div>
   );
