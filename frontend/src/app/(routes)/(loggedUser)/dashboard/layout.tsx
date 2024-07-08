@@ -4,13 +4,19 @@ import NavBarItem from "@/components/navBarItem";
 import LogoutSvg from "@/components/svg/logout";
 import UserSvg from "@/components/svg/userIcon";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import React, { useEffect } from "react";
 
 function Dashboard({ children }: { children: React.ReactNode }) {
   const { user, logout, isMenuOpen, menuOpen } = useAuth();
   const path = usePathname();
+  const router = useRouter();
+
+  const handleClick = () =>{
+    router.push('/dashboard/user/getMe');
+    menuOpen();
+  }
 
   useEffect(() => {
   }, [path]);
@@ -138,7 +144,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
             </NavBarItem>
           </div>
           <div className="flex gap-5 p-3 border rounded-md items-center lg:hidden font-bold">
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center" onClick={handleClick}>
               <UserSvg />
               Olá {user.username}, seja bem-vindo!
             </div>
@@ -257,7 +263,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
             </svg>
           </NavBarItem>
           <div className="flex gap-5 p-3 border rounded-md items-center lg:hidden font-bold">
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center" onClick={handleClick}>
               <UserSvg />
               Olá {user.username}, seja bem-vindo!
             </div>

@@ -1,5 +1,5 @@
 from app.schemas.user.base import UserBase
-from app.schemasTest import ProfileUserResponse
+from app.schemasBase import ProfileUserResponse
 from typing import Optional
 from pydantic import BaseModel
 

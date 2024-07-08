@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
-import pytz
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from typing import List
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from datetime import datetime, timezone
+from datetime import datetime
 from .database import SessionLocal, engine
 
 from . import models
@@ -13,19 +12,19 @@ from app.schemas.user.loginsch import LoginRequest
 from app.schemas.user.passwordReset import PasswordResetRequest, PasswordResetVerify
 from app.schemas.profile.create import ProfileCreate
 from app.schemas.profile.update import UpdateProfile
-from app.schemasTest import Profile
+from app.schemasBase import Profile
 from app.schemas.module.create import ModuleCreate
 from app.schemas.module.update import UpdateModule
-from app.schemasTest import Module
+from app.schemasBase import Module
 from app.schemas.method.create import MethodCreate
 from app.schemas.method.update import UpdateMethod
-from app.schemasTest import Method
+from app.schemasBase import Method
 from app.schemas.transaction.create import TransactionCreate
 from app.schemas.transaction.update import UpdateTransaction
-from app.schemasTest import Transaction
+from app.schemasBase import Transaction
 from app.schemas.user.create import UserCreate
 from app.schemas.user.update import UpdateUser
-from app.schemasTest import User
+from app.schemasBase import User
 from app.schemas.user.relation import UserWithRelation
 from jinja2 import Environment, FileSystemLoader
 from .repository import profileRepository, userRepository, moduleRepository, transactionRepository, methodRepository, loginRepository
@@ -52,7 +51,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 MAIL_USERNAME = MAIL_USERNAME = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD = MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
-#utc=pytz.UTC
 
 def get_db():
     db = SessionLocal()
@@ -62,9 +60,9 @@ def get_db():
         db.close()
         
 conf = ConnectionConfig(
-    MAIL_USERNAME = "qqtechrecuperarsenha@hotmail.com",
-    MAIL_PASSWORD = "msgbmdtqqwkaomow",
-    MAIL_FROM = "qqtechrecuperarsenha@hotmail.com",
+    MAIL_USERNAME = MAIL_USERNAME,
+    MAIL_PASSWORD = MAIL_PASSWORD,
+    MAIL_FROM = MAIL_USERNAME,
     MAIL_PORT=587,
     MAIL_SERVER="smtp-mail.outlook.com",
     MAIL_STARTTLS=True,

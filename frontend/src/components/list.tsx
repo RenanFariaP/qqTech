@@ -40,17 +40,12 @@ const List = <T,>({
   const [selectedEntity, setSelectedEntity] = useState<ListItem<T> | null>(
     null
   );
-  const [loggedUserId, setLoggedUserId] = useState(0);
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const {user} = useAuth();
 
-  const getLoggedUser = () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
-    setLoggedUserId(parseInt(userId));
-  };
 
   const handleSearchChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -60,7 +55,7 @@ const List = <T,>({
   };
 
   const handleDeleteConfirmation = (item: ListItem<T>) => {
-    if(loggedUserId === item.uniqueIdentifier){
+    if(parseInt(user.userId) === item.uniqueIdentifier){
       Notify('error', "Não é possível fazer auto-exclusão!");
       return;
     }
@@ -86,7 +81,6 @@ const List = <T,>({
 
   useEffect(() => {
     onFilterChange(searchQuery);
-    getLoggedUser();
   }, [searchQuery]);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);

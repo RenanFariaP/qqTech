@@ -21,7 +21,6 @@ const GetUser = ({ params }: { params: { id: string } }) => {
   const [email, setEmail] = useState("");
   const [registration, setRegistration] = useState("");
   const [profile, setProfile] = useState<ProfileInfos>();
-  const [modules, setModules] = useState<ModuleInfos[]>([]);
   const [modulesFormatted, setModulesFormatted] = useState<
     ListItem<ModuleInfos>[]
   >([]);
@@ -86,6 +85,7 @@ const GetUser = ({ params }: { params: { id: string } }) => {
       const response = await axios.get<UserWithRelation>(
         `http://localhost:8000/dashboard/user/${id}`
       );
+
       const user = response.data;
       setUserId(user.id);
       setUsername(user.username);

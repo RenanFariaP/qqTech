@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from .. import models
 from passlib.context import CryptContext
 from app.schemas.user import create, config, update
-from app.schemasTest import User
+from app.schemasBase import User
 from app.repository import loginRepository
 from fastapi import HTTPException
 

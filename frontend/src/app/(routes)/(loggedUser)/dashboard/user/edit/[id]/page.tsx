@@ -10,7 +10,6 @@ import GenericButton from "@/components/genericButton";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import axios from "axios";
-import { Profile } from "@/types/profile";
 import { ToastContainer } from "react-toastify";
 
 import { Notify } from "@/components/toast";
@@ -18,7 +17,7 @@ import { Error } from "@/types/error";
 import { useRouter } from "next/navigation";
 import { ProfileInfos } from "@/types/infos/profileInfos";
 
-interface UserUpdateForm {
+interface UpdateUserForm {
   username: string;
   email: string;
   registration: string;
@@ -53,7 +52,7 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
   }, [profileSelectedOption, profileOptions]);
 
   const router = useRouter();
-  const [formData, setFormData] = useState<UserUpdateForm>({
+  const [formData, setFormData] = useState<UpdateUserForm>({
     username: "",
     email: "",
     registration: "",
@@ -67,7 +66,7 @@ const UserUpdate = ({ params }: { params: { id: string } }) => {
     profile_id: null
   });
 
-  const handleChange = (_name: keyof UserUpdateForm, _value: any) => {
+  const handleChange = (_name: keyof UpdateUserForm, _value: any) => {
     setGetUserForm((prev) => ({ ...prev, [_name]: _value }));
   };
 

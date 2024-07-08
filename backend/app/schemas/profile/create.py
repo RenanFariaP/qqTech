@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
-from app.schemasTest import Module
+from app.schemasBase import Module
 
 class ProfileCreate(BaseModel):
     name: str

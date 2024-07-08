@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.schemas.module import create, config
-from app.schemasTest import Module
+from app.schemasBase import Module
 from .. import models
 from app.schemas.module.update import UpdateModule
 from fastapi import HTTPException

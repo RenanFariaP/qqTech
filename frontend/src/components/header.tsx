@@ -5,9 +5,11 @@ import logoMarca from "../../public/logomarca.png";
 import { useAuth } from "@/contexts/AuthContext";
 import LogoutSvg from "./svg/logout";
 import UserSvg from "./svg/userIcon";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const { user, logout, menuOpen } = useAuth();
+  const router = useRouter();
   if (user.token === "") {
     return (
       <div className="flex justify-between items-center h-24 w-full bg-[#418713] p-10">
@@ -36,7 +38,7 @@ const Header = () => {
         </svg>
       </div>
       <div className="hidden gap-5 p-3 border rounded-md items-center lg:flex">
-        <div className="text-white flex gap-1 items-center">
+        <div className="text-white flex gap-1 items-center cursor-pointer" onClick={()=>router.push('/dashboard/user/getMe')}>
           <UserSvg />
           Olá {user.username}, seja bem-vindo!
         </div>

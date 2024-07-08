@@ -33,8 +33,7 @@ const UserManagement = () => {
   const [profileOptions, setProfileOptions] = useState<SelectOptions<Profile>[]>([]);
   const [userList, setUserList] = useState<ListItem<UserWithRelation>[]>([]);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserWithRelation | null>(null);
-  
+
 
   const [profileSelectedOption, setProfileSelectedOption] =
     useState<SelectOptions<Profile> | null>(null);
@@ -197,7 +196,6 @@ const UserManagement = () => {
             />
           </div>
           <form onSubmit={handleSubmit}>
-            <h1></h1>
             <TextInput
               label="Nome do usuário"
               type="text"

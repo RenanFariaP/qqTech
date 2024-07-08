@@ -1,16 +1,23 @@
 import * as React from "react";
 
-function UserSvg() {
+interface Props {
+  width?: number;
+  height?: number;
+  strokeLg?: string;
+  strokeMb?: string;
+}
+
+function UserSvg({width = 24, height = 24, strokeLg = "#418713", strokeMb = "#FFF"}: Props) {
   return (
     <>
       <div className="bg-white p-3 rounded-full lg:block hidden">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width={24}
-          height={24}
+          width={width}
+          height={height}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#418713"
+          stroke={strokeLg}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -22,11 +29,11 @@ function UserSvg() {
       <div className="block lg:hidden p-3 rounded-full bg-[#418713]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width={24}
-          height={24}
+          width={width}
+          height={height}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#FFF"
+          stroke={strokeMb}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"

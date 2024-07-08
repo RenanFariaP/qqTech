@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.schemas.method import create, config, update
-from app.schemasTest import Method
+from app.schemasBase import Method
 from .. import models
 from fastapi import HTTPException
 
