@@ -172,6 +172,7 @@ const UserManagement = () => {
       (item) =>
         item.username.toLowerCase().includes(value.toLowerCase()) ||
         item.registration.toLowerCase().includes(value.toLowerCase()) ||
+        item.email.toLowerCase().includes(value.toLowerCase()) ||
         item.profile?.name.toLowerCase().includes(value.toLowerCase())
     );
     setUserList(formatUsers(filteredUsers));
@@ -258,7 +259,7 @@ const UserManagement = () => {
             onFilterChange={onFilterChange}
             onDelete={(value) => handleDelete(value.id)}
             listEntity="o usuário"
-            searchPlaceHolder= "usuário (Nome, email ou nome de perfil)"
+            searchPlaceHolder= "usuário (Nome, email, matrícula ou nome de perfil)"
             entityType="user"
           />
         </>
