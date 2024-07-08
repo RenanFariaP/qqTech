@@ -33,10 +33,8 @@ const ResetPassword = () => {
       token: token,
       newPassword: newPassword
     }
-    console.log(form)
     try {
       const response = await axios.post('http://localhost:8000/password-reset/verify', form);
-      console.log(form, response.data.message);
       Notify('success', response.data.message)
       setEmail('');
       setToken('');

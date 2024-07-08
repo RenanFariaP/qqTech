@@ -115,8 +115,6 @@ const ModuleManagement = () => {
       );
       const { data } = response;
       const formatted = formatModules(data);
-      console.log('formatted', formatted)
-      console.log('data', data)
       setModules(data);
       setModuleList(formatted);
     } catch (error) {

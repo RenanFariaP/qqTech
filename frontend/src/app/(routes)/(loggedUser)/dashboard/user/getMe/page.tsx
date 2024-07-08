@@ -16,6 +16,7 @@ import { UserWithRelation } from "@/types/user";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
 
 const MyAccount = () => {
   const { user, logout } = useAuth();
@@ -48,38 +49,6 @@ const MyAccount = () => {
         uniqueIdentifier: module.id,
         cols,
         label: module.name,
-      };
-    });
-  };
-
-  const formatTransactions = (
-    data: TransactionInfos[]
-  ): ListItem<TransactionInfos>[] => {
-    return data.map((transaction) => {
-      const cols: ListColumn<string>[] = [
-        { value: transaction.name },
-        { value: transaction.TAG },
-      ];
-      return {
-        value: transaction,
-        uniqueIdentifier: transaction.id,
-        cols,
-        label: transaction.name,
-      };
-    });
-  };
-
-  const formatMethods = (data: MethodInfos[]): ListItem<MethodInfos>[] => {
-    return data.map((method) => {
-      const cols: ListColumn<string>[] = [
-        { value: method.name },
-        { value: method.description },
-      ];
-      return {
-        value: method,
-        uniqueIdentifier: method.id,
-        cols,
-        label: method.name,
       };
     });
   };
@@ -139,20 +108,22 @@ const MyAccount = () => {
   };
 
   useEffect(() => {
-    if (!user) {
-      logout();
-    }
     handleGetUser();
-  }, [user]);
+  }, []);
 
   return (
     <div className="w-full flex justify-center p-10">
+      <ToastContainer />
       <div className="bg-white p-7 h-auto rounded-md">
         <div className="flex justify-center">
           <UserSvg height={48} width={48} />
         </div>
-        <div className="flex justify-center font-bold my-3
-        ">Olá, {username}</div>
+        <div
+          className="flex justify-center font-bold my-3
+        "
+        >
+          Olá, {username}
+        </div>
         <div className="flex gap-3">
           <p className="font-bold">E-mail:</p>
           <p>{email}</p>
@@ -171,9 +142,6 @@ const MyAccount = () => {
           <p className="cursor-pointer hover:text-zinc-500">
             {profile ? profile.name : "Usuário sem perfil associado"}
           </p>
-        </div>
-        <div className="flex flex-col w-full mt-3">
-          <TableList title="Módulos" data={modulesFormatted} route="/module/" />
         </div>
         {passwordChange ? (
           <div className="bg-[#d2d2d2] p-5 flex flex-col rounded-md mt-5">
@@ -196,7 +164,12 @@ const MyAccount = () => {
                 onChange={(e) => setNewPasswordConfirmation(e.target.value)}
               />
               <div className="flex justify-between gap-5">
-                <button className="flex justify-center items-center bg-red-700 py-2 px-7 rounded-md text-white my-5 shadow-sm" onClick={()=>setPasswordChange(false)}>Cancelar</button>
+                <button
+                  className="flex justify-center items-center bg-red-700 py-2 px-7 rounded-md text-white my-5 shadow-sm"
+                  onClick={() => setPasswordChange(false)}
+                >
+                  Cancelar
+                </button>
                 <ButtonInput label="Enviar" onSubmit={() => {}} />
               </div>
             </form>

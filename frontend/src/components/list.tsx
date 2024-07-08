@@ -45,7 +45,6 @@ const List = <T,>({
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const {user} = useAuth();
-  //console.log(data);
 
 
   const handleSearchChange = (
